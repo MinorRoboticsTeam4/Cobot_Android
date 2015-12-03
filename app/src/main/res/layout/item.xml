@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="6dp"
+    android:interpolator="@android:anim/linear_interpolator"
+    android:id="@+id/cv"
+    android:theme="@style/AppTheme.Base"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/coffee_wrap"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/header_wrap"
+            android:gravity="top"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/coffee_photo"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="15dp"
+                android:src="@android:drawable/sym_def_app_icon" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/coffee_name"
+                    android:textSize="30sp"
+                    android:text="Coffee"
+                    android:layout_toRightOf="@+id/coffee_photo"
+                    android:layout_toEndOf="@+id/coffee_photo"
+                    android:textColor="#505050"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="0dp"
+                    android:layout_toStartOf="@+id/coffee_arrow"
+                    android:layout_marginEnd="15dp" />
+
+            <ImageButton
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:id="@+id/coffee_arrow"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/coffee_arrow"
+                    android:adjustViewBounds="false"
+                    android:background="#00000000"
+                    android:scaleType="centerInside"
+                    android:tint="#606060"
+                    android:contentDescription="expand_arrow"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/body_wrap"
+            android:gravity="top"
+            android:layout_below="@+id/header_wrap"
+            android:paddingTop="10dp"
+            android:paddingBottom="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Strength"
+                android:id="@+id/textViewStrength"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="15dp" />
+
+            <android.support.v7.widget.AppCompatSeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/seekBarStrength"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/textViewStrength"
+                android:max="4"
+                android:progress="2" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Milk"
+                android:id="@+id/textViewMilk"
+                android:layout_below="@+id/seekBarStrength"
+                android:layout_alignLeft="@+id/textViewStrength"
+                android:layout_alignStart="@+id/textViewStrength"
+                android:layout_marginTop="20dp" />
+
+            <android.support.v7.widget.AppCompatSeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/seekBarMilk"
+                android:layout_below="@+id/textViewMilk"
+                android:max="4"
+                android:progress="2"
+                android:layout_alignStart="@+id/seekBarStrength"
+                android:layout_alignRight="@+id/seekBarStrength"
+                android:layout_alignEnd="@+id/seekBarStrength" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Sugar"
+                android:id="@+id/textViewSugar"
+                android:layout_alignParentLeft="false"
+                android:layout_marginTop="20dp"
+                android:layout_below="@+id/seekBarMilk"
+                android:layout_alignStart="@+id/textViewStrength"
+                android:layout_alignParentStart="false" />
+
+            <android.support.v7.widget.AppCompatSeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/seekBarSugar"
+                android:layout_below="@+id/textViewSugar"
+                android:longClickable="false"
+                android:max="4"
+                android:progress="2"
+                android:layout_alignEnd="@+id/seekBarMilk"
+                android:layout_alignStart="@+id/seekBarMilk"
+                android:theme="@style/AppTheme.Base" />
+
+            <android.support.v7.widget.AppCompatCheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Personal mug"
+                android:id="@+id/checkBoxMug"
+                android:textColor="#505050"
+                android:layout_alignParentStart="false"
+                android:layout_below="@+id/seekBarSugar"
+                android:layout_marginTop="20dp"
+                style="@style/Base.Widget.AppCompat.CompoundButton.CheckBox"
+                android:layout_alignStart="@+id/textViewStrength"
+                android:layout_marginStart="-8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Location"
+                android:id="@+id/textViewLocation"
+                android:layout_alignRight="@+id/seekBarSugar"
+                android:layout_alignEnd="@+id/seekBarSugar"
+                android:layout_alignBaseline="@+id/checkBoxMug"
+                android:layout_marginEnd="15dp" />
+
+            <android.support.v7.widget.AppCompatButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Order"
+                android:id="@+id/orderButton"
+                android:layout_below="@+id/checkBoxMug"
+                android:layout_alignLeft="@+id/textViewSugar"
+                android:layout_alignStart="@+id/textViewSugar"
+                android:layout_marginTop="20dp"
+                android:enabled="true"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/button"
+                android:elevation="10dp"
+                android:textStyle="bold"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp" />
+
+            <android.support.v7.widget.AppCompatButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add to order"
+                android:id="@+id/addToOrderButton"
+                android:enabled="true"
+                android:layout_alignBottom="@+id/orderButton"
+                android:layout_alignRight="@+id/textViewLocation"
+                android:textColor="#0CA5B0"
+                android:background="@drawable/secondarybutton"
+                android:elevation="0dp"
+                android:textStyle="bold"
+                android:layout_marginStart="20dp"
+                android:focusable="false"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+</android.support.v7.widget.CardView>

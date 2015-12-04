@@ -30,7 +30,6 @@ import retrofit.Retrofit;
 public class LoginFragment extends Fragment implements View.OnClickListener{
 
     private static final String ARG_SECTION_NUMBER = "section_number";
-    ServiceGenerator.UserClient userClient;
 
     private EditText name;
     private EditText location;
@@ -54,8 +53,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
-
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.login_fragment, container, false);
 
@@ -123,7 +120,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
     /**
      * Registers the user after button press, after successful registration authenticate() is called
-     * @param v view to get register fields from
+     * @param v
      */
     public void register(View v) {
 
@@ -134,20 +131,20 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
         setText("", "", "", "");
 
+        ServiceGenerator.UserClient userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
         Call<User> call = userClient.createUser(name, email, password, location);
         call.enqueue(new Callback<User>() {
 
             @Override
             public void onResponse(Response<User> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    //TODO: update API to respond the model on creation so no two calls are needed
-                    authenticate(email, password);
+                    setCredentials(email, password, response.body().getId());
                 } else {
                     setText(name, location, email, password);
                     ApiError error = ErrorUtils.parseError(response, retrofit);
                     Log.d("error message", error.message());
 
-                    for( String message : error.validation_messages() ) {
+                    for (String message : error.validation_messages()) {
                         Log.d("validation message", message);
                     }
                     System.out.println("Failed");
@@ -173,22 +170,13 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         CobotMain.email = email;
         CobotMain.password = password;
 
+        ServiceGenerator.UserClient userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
         Call<User> call = userClient.authenticate();
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Response<User> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-
-                    //TODO: Move this away from shared preferences
-                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-                    SharedPreferences.Editor editor = preferences.edit();
-                    editor.putInt("id", response.body().getId());
-                    editor.putString("email", email);
-                    editor.putString("password", password);
-                    editor.apply();
-
-                    CobotMain main = (CobotMain) getActivity();
-                    main.setAdapter();
+                    setCredentials(email, password, response.body().getId());
                     System.out.println("Success");
                 } else {
                     ApiError error = ErrorUtils.parseError(response, retrofit);
@@ -205,6 +193,17 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
 
 
+    }
+
+    public void setCredentials(String email, String password, int id) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("id", id);
+        editor.putString("email", email);
+        editor.putString("password", password);
+        editor.apply();
+        CobotMain main = (CobotMain) getActivity();
+        main.setAdapter();
     }
 
 }

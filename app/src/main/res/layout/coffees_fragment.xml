@@ -14,7 +14,7 @@
         android:text="Coffees"
         android:id="@+id/textViewCoffee"
         android:layout_centerHorizontal="true"
-        android:textColor="#ffffff" />
+        android:textColor="#656565" />
 
     <ImageButton
         android:layout_width="wrap_content"

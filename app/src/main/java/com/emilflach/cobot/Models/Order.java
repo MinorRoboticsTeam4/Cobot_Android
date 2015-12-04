@@ -5,18 +5,13 @@ package com.emilflach.cobot.Models;
  * by Emil on 2015-11-24.
  */
 public class Order {
-    private int id;
-    private int user;
-    private String location;
-    private int delivery_status;
-    private String delivered_at;
+    private int id = 0;
+    private int user = 0;
+    private String location = "No location";
+    private int delivery_status = 0;
+    private String delivered_at = "No time";
 
-    Order(int id, int user, String location, int delivery_status, String delivered_at) {
-        this.id = id;
-        this.user = user;
-        this.location = location;
-        this.delivery_status = delivery_status;
-        this.delivered_at = delivered_at;
+    public Order() {
     }
 
     public int getId() {

@@ -106,7 +106,7 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
     @Override
     public void onBindViewHolder(final CoffeeViewHolder holder, int i) {
         holder.coffeeName.setText(coffees.get(i).getName());
-        holder.coffeePhoto.setImageResource(coffeeImage(coffees.get(i).getType()));
+        holder.coffeePhoto.setImageResource(CobotMain.coffeeImage(coffees.get(i).getType()));
         holder.coffeeType = coffees.get(i).getType();
         holder.coffeeStrength.setProgress(coffees.get(i).getStrength());
         holder.coffeeMilk.setProgress(coffees.get(i).getMilk());
@@ -221,38 +221,7 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
     }
 
 
-    /**
-     * Responds the corresponding integer of a drawable from coffee type
-     * @param i type of coffee
-     * @return corresponding image
-     */
-    public int coffeeImage(int i) {
-        switch (i) {
-            case 0: //Black
-                return R.drawable.black;
-//            case 1: //Cappuccino
-//                return R.drawable.black;
-//            case 2: //Espresso
-//                return R.drawable.black;
-//            case 3: //Cafe au Lait
-//                return R.drawable.black;
-//            case 4: //Wiener Melange
-//                return R.drawable.black;
-//            case 5: //Double Espresso
-//                return R.drawable.black;
-//            case 6: //Cafe Mocca
-//                return R.drawable.black;
-//            case 7: //Cafe Macchiato
-//                return R.drawable.black;
-//            case 8: //Espresso choc
-//                return R.drawable.black;
-//            case 9://Hot Chocolate
-//                return R.drawable.black;
-            default:
-                return R.drawable.black;
-        }
 
-    }
 
 
     /**

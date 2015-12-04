@@ -15,7 +15,7 @@
         android:text="Login"
         android:id="@+id/textViewCoffee"
         android:layout_centerHorizontal="true"
-        android:textColor="#ffffff" />
+        android:textColor="#656565" />
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -34,10 +34,6 @@
                 android:ems="10"
                 android:id="@+id/editTextLoginPassword"
                 android:layout_below="@+id/editTextLoginEmail"
-                android:textColor="#FFFFFF"
-                android:textColorHighlight="#FFFFFF"
-                android:textColorHint="#FFFFFF"
-                android:textColorLink="#FFFFFF"
                 android:hint="Password" />
 
             <EditText
@@ -46,10 +42,6 @@
                 android:inputType="textEmailAddress"
                 android:ems="10"
                 android:id="@+id/editTextLoginEmail"
-                android:textColor="#FFFFFF"
-                android:textColorHighlight="#FFFFFF"
-                android:textColorHint="#FFFFFF"
-                android:textColorLink="#FFFFFF"
                 android:hint="E-mail" />
 
             <Button
@@ -80,11 +72,7 @@
                 android:inputType="textPersonName"
                 android:ems="10"
                 android:id="@+id/editTextName"
-                android:hint="Name"
-                android:textColor="#FFFFFF"
-                android:textColorHighlight="#FFFFFF"
-                android:textColorHint="#FFFFFF"
-                android:textColorLink="#FFFFFF" />
+                android:hint="Name" />
 
             <EditText
                 android:layout_width="wrap_content"
@@ -94,11 +82,7 @@
                 android:id="@+id/editTextPassword"
                 android:layout_below="@+id/editTextEmail"
                 android:password="true"
-                android:hint="Password"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#FFFFFF"
-                android:textColorHighlight="#FFFFFF"
-                android:textColorLink="#FFFFFF" />
+                android:hint="Password" />
 
             <EditText
                 android:layout_width="wrap_content"
@@ -107,11 +91,7 @@
                 android:ems="10"
                 android:id="@+id/editTextEmail"
                 android:layout_below="@+id/editTextLocation"
-                android:hint="E-mail"
-                android:textColor="#FFFFFF"
-                android:textColorHighlight="#FFFFFF"
-                android:textColorHint="#FFFFFF"
-                android:textColorLink="#FFFFFF" />
+                android:hint="E-mail" />
 
             <EditText
                 android:layout_width="wrap_content"
@@ -121,10 +101,6 @@
                 android:layout_alignStart="@+id/editTextName"
                 android:layout_alignEnd="@+id/editTextName"
                 android:hint="Location"
-                android:textColor="#FFFFFF"
-                android:textColorHighlight="#FFFFFF"
-                android:textColorHint="#FFFFFF"
-                android:textColorLink="#FFFFFF"
                 android:foregroundTint="#FFFFFF"
                 android:inputType="number" />
 

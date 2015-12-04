@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
-    android:layout_marginBottom="20dp"
+    android:layout_marginBottom="10dp"
     android:interpolator="@android:anim/linear_interpolator"
     android:id="@+id/cv" >
 
@@ -42,7 +42,7 @@
                     android:text="Coffee"
                     android:layout_toRightOf="@+id/coffee_photo"
                     android:layout_toEndOf="@+id/coffee_photo"
-                    android:textColor="#505050"
+                    android:textColor="#656565"
                     android:layout_alignParentTop="true"
                     android:layout_marginTop="0dp"
                     android:layout_toStartOf="@+id/coffee_arrow"

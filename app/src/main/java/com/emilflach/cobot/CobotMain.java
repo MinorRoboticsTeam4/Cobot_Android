@@ -54,6 +54,38 @@ public class CobotMain extends AppCompatActivity {
         mViewPager.setAdapter(mSectionsPagerAdapter);
     }
 
+    /**
+     * Responds the corresponding integer of a drawable from coffee type
+     * @param i type of coffee
+     * @return corresponding image
+     */
+    public static int coffeeImage(int i) {
+        switch (i) {
+            case 0: //Black
+                return R.drawable.black;
+//            case 1: //Cappuccino
+//                return R.drawable.black;
+//            case 2: //Espresso
+//                return R.drawable.black;
+//            case 3: //Cafe au Lait
+//                return R.drawable.black;
+//            case 4: //Wiener Melange
+//                return R.drawable.black;
+//            case 5: //Double Espresso
+//                return R.drawable.black;
+//            case 6: //Cafe Mocca
+//                return R.drawable.black;
+//            case 7: //Cafe Macchiato
+//                return R.drawable.black;
+//            case 8: //Espresso choc
+//                return R.drawable.black;
+//            case 9://Hot Chocolate
+//                return R.drawable.black;
+            default:
+                return R.drawable.black;
+        }
+    }
+
 
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {

@@ -34,10 +34,6 @@ public class OrdersFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     ServiceGenerator.UserClient userClient;
 
-    private TextView location;
-    private TextView time;
-    private TextView status;
-
     public OrdersFragment() {
     }
 
@@ -69,7 +65,8 @@ public class OrdersFragment extends Fragment {
             rv.setHasFixedSize(true);
 
             List<Product> products = new ArrayList<>();
-            OrderRVAdapter adapter = new OrderRVAdapter(products);
+            Order order = new Order();
+            OrderRVAdapter adapter = new OrderRVAdapter(products, order);
             rv.setAdapter(adapter);
 
             setOrders(view);
@@ -82,10 +79,6 @@ public class OrdersFragment extends Fragment {
      * @param view the view to which the order should be set
      */
     private void setOrders(View view) {
-        location = (TextView) view.findViewById(R.id.textViewLocation);
-        time = (TextView) view.findViewById(R.id.textViewTime);
-        status = (TextView) view.findViewById(R.id.textViewStatus);
-
         Call<List<Order>> call = userClient.orders(CobotMain.id);
         call.enqueue(new Callback<List<Order>>() {
 
@@ -93,11 +86,8 @@ public class OrdersFragment extends Fragment {
             public void onResponse(Response<List<Order>> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     for (Order order : response.body()) {
-                        location.setText(String.valueOf(order.getId()));
-                        time.setText(String.valueOf(order.getUser()));
-                        status.setText(String.valueOf(order.getDelivery_status()));
                         CobotMain.currentOrderId = order.getId();
-                        setOrderProducts(order.getId());
+                        setOrderProducts(order.getId(), order);
                     }
                 } else {
                     ApiError error = ErrorUtils.parseError(response, retrofit);
@@ -117,19 +107,17 @@ public class OrdersFragment extends Fragment {
      * Loads the products related to an order and displays it
      * @param order_id the order for which products should be returned
      */
-    private void setOrderProducts(int order_id) {
+    private void setOrderProducts(int order_id, final Order order) {
         Call<List<Product>> call = userClient.orderProducts(order_id);
         call.enqueue(new Callback<List<Product>>() {
-
             private List<Product> products = new ArrayList<>();
-
             @Override
             public void onResponse(Response<List<Product>> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     for (Product product : response.body()) {
                         this.products.add(product);
                     }
-                    OrderRVAdapter adapter = new OrderRVAdapter(products);
+                    OrderRVAdapter adapter = new OrderRVAdapter(products, order);
                     rv.setAdapter(adapter);
                 } else {
                     ApiError error = ErrorUtils.parseError(response, retrofit);

@@ -66,7 +66,8 @@ public class OrdersFragment extends Fragment {
 
             List<Product> products = new ArrayList<>();
             Order order = new Order();
-            OrderRVAdapter adapter = new OrderRVAdapter(products, order);
+            CobotMain cobotMain = (CobotMain) getActivity();
+            OrderRVAdapter adapter = new OrderRVAdapter(products, order, cobotMain);
             rv.setAdapter(adapter);
 
             setOrders(view);
@@ -117,7 +118,8 @@ public class OrdersFragment extends Fragment {
                     for (Product product : response.body()) {
                         this.products.add(product);
                     }
-                    OrderRVAdapter adapter = new OrderRVAdapter(products, order);
+                    CobotMain cobotMain = (CobotMain) getActivity();
+                    OrderRVAdapter adapter = new OrderRVAdapter(products, order, cobotMain);
                     rv.setAdapter(adapter);
                 } else {
                     ApiError error = ErrorUtils.parseError(response, retrofit);

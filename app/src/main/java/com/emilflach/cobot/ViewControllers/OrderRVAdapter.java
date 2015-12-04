@@ -10,18 +10,31 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.emilflach.cobot.CobotMain;
+import com.emilflach.cobot.Models.ApiError;
+import com.emilflach.cobot.Models.ApiMessage;
 import com.emilflach.cobot.Models.Order;
 import com.emilflach.cobot.Models.Product;
 import com.emilflach.cobot.R;
+import com.emilflach.cobot.api.ErrorUtils;
+import com.emilflach.cobot.api.ServiceGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
+
 public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    ServiceGenerator.UserClient userClient;
 
     public static class StatusViewHolder extends RecyclerView.ViewHolder {
 
@@ -49,6 +62,8 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         TextView coffeeMug;
         ImageView coffeePhoto;
         RelativeLayout coffeeWrap;
+        ImageButton deleteButton;
+        int productid = 0;
 
         COVHolder(View itemView) {
             super(itemView);
@@ -60,16 +75,19 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             coffeeMilk = (TextView)itemView.findViewById(R.id.textViewMilk);
             coffeeSugar = (TextView)itemView.findViewById(R.id.textViewSugar);
             coffeeMug = (TextView)itemView.findViewById(R.id.textViewMug);
+            deleteButton = (ImageButton) itemView.findViewById(R.id.deleteButton);
 
         }
     }
 
     List<Product> coffees;
     Order order;
+    CobotMain cobotMain;
 
-    OrderRVAdapter(List<Product> coffees, Order order){
+    OrderRVAdapter(List<Product> coffees, Order order, CobotMain cobotMain){
         this.coffees = coffees;
         this.order = order;
+        this.cobotMain = cobotMain;
     }
 
     @Override
@@ -79,6 +97,7 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int type) {
+        userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
         if(type == 0) {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.status_item, viewGroup, false);
             return new StatusViewHolder(v);
@@ -89,7 +108,7 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int i) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int i) {
         if (i == 0) {
             StatusViewHolder h = (StatusViewHolder) holder;
             h.location.setText(String.valueOf(order.getDelivery_status()));
@@ -97,13 +116,20 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             h.time.setText(String.valueOf(order.getDelivered_at()));
         } else {
             i = i - 1;
-            COVHolder h = (COVHolder) holder;
+            final COVHolder h = (COVHolder) holder;
+            h.productid = coffees.get(i).getId();
             h.coffeeName.setText(coffees.get(i).getName());
             h.coffeePhoto.setImageResource(CobotMain.coffeeImage(coffees.get(i).getType()));
             h.coffeeStrength.setText(String.valueOf(coffees.get(i).getStrength()));
             h.coffeeMilk.setText(String.valueOf(coffees.get(i).getMilk()));
             h.coffeeSugar.setText(String.valueOf(coffees.get(i).getSugar()));
             h.coffeeMug.setText(coffees.get(i).isMug() ? "Yes" : "No");
+
+            h.deleteButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    deleteProduct(h);
+                }
+            });
         }
 
     }
@@ -122,6 +148,32 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public int getItemViewType(int position) {
         return position == 0 ? 0 : 1;
+    }
+
+
+    /**
+     * Deletes selected product and resets the adapter to refresh data
+     * @param h the coffeeviewholder of the product that has to be deleted
+     */
+    public void deleteProduct(COVHolder h) {
+        Call<ApiMessage> call = userClient.deleteOrderProduct(CobotMain.currentOrderId, h.productid);
+        call.enqueue(new Callback<ApiMessage>() {
+            private List<Product> products = new ArrayList<>();
+            @Override
+            public void onResponse(Response<ApiMessage> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    cobotMain.setAdapter();
+                } else {
+                    ApiError error = ErrorUtils.parseError(response, retrofit);
+                    Log.d("error message", error.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("Error", t.getMessage());
+            }
+        });
     }
 }
 

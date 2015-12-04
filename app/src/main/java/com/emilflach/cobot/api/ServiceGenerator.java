@@ -4,6 +4,7 @@ package com.emilflach.cobot.api;
 import android.util.Base64;
 
 import com.emilflach.cobot.CobotMain;
+import com.emilflach.cobot.Models.ApiMessage;
 import com.emilflach.cobot.Models.Order;
 import com.emilflach.cobot.Models.Product;
 import com.emilflach.cobot.Models.User;
@@ -107,6 +108,12 @@ public class ServiceGenerator {
                 @Field("option_milk") int milk,
                 @Field("option_sugar") int sugar,
                 @Field("option_mug") int mug
+        );
+
+        @DELETE("orders/{orderid}/products/{productid}")
+        Call<ApiMessage> deleteOrderProduct(
+                @Path("orderid") int orderid,
+                @Path("productid") int productid
         );
 
     }

@@ -57,12 +57,13 @@
             android:paddingBottom="20dp">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:id="@+id/imageView3"
                 android:layout_centerHorizontal="true"
-                android:src="@android:drawable/ic_menu_recent_history"
-                android:layout_marginBottom="10dp" />
+                android:src="@drawable/clock"
+                android:layout_marginBottom="10dp"
+                android:tint="@color/colorPrimary" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -82,12 +83,13 @@
             android:paddingBottom="20dp">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:id="@+id/imageView4"
                 android:layout_centerHorizontal="true"
-                android:src="@android:drawable/ic_dialog_map"
-                android:layout_marginBottom="5dp" />
+                android:layout_marginBottom="10dp"
+                android:tint="@color/colorPrimary"
+                android:src="@drawable/location" />
 
             <TextView
                 android:layout_width="wrap_content"

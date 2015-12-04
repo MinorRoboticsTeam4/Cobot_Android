@@ -93,6 +93,8 @@
                 android:layout_below="@+id/textViewStrength"
                 android:max="4"
                 android:progress="2"
+                android:thumbTint="@color/colorPrimary"
+                android:progressTint="@color/colorPrimary"
                 android:theme="@style/AppTheme.Base"/>
 
             <TextView
@@ -116,6 +118,8 @@
                 android:layout_alignStart="@+id/seekBarStrength"
                 android:layout_alignRight="@+id/seekBarStrength"
                 android:layout_alignEnd="@+id/seekBarStrength"
+                android:thumbTint="@color/colorPrimary"
+                android:progressTint="@color/colorPrimary"
                 android:theme="@style/AppTheme.Base"/>
 
             <TextView
@@ -140,6 +144,8 @@
                 android:progress="2"
                 android:layout_alignEnd="@+id/seekBarMilk"
                 android:layout_alignStart="@+id/seekBarMilk"
+                android:thumbTint="@color/colorPrimary"
+                android:progressTint="@color/colorPrimary"
                 android:theme="@style/AppTheme.Base" />
 
             <android.support.v7.widget.AppCompatCheckBox
@@ -154,7 +160,9 @@
                 style="@style/Base.Widget.AppCompat.CompoundButton.CheckBox"
                 android:layout_alignStart="@+id/textViewStrength"
                 android:layout_marginStart="-8dp"
-                android:theme="@style/AppTheme.Base"/>
+                android:theme="@style/AppTheme.Base"
+                android:colorControlActivated="@color/colorPrimary"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -173,33 +181,15 @@
                 android:text="Order"
                 android:id="@+id/orderButton"
                 android:layout_below="@+id/checkBoxMug"
-                android:layout_alignLeft="@+id/textViewSugar"
-                android:layout_alignStart="@+id/textViewSugar"
                 android:layout_marginTop="20dp"
                 android:enabled="true"
                 android:textColor="#FFFFFF"
-                android:background="@drawable/button"
+                android:background="@color/colorPrimary"
                 android:elevation="10dp"
                 android:textStyle="bold"
                 android:paddingLeft="25dp"
-                android:paddingRight="25dp" />
-
-            <android.support.v7.widget.AppCompatButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Add to order"
-                android:id="@+id/addToOrderButton"
-                android:enabled="true"
-                android:layout_alignBottom="@+id/orderButton"
-                android:layout_alignRight="@+id/textViewLocation"
-                android:textColor="#0CA5B0"
-                android:background="@drawable/secondarybutton"
-                android:elevation="0dp"
-                android:textStyle="bold"
-                android:layout_marginStart="20dp"
-                android:focusable="false"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp" />
+                android:paddingRight="25dp"
+                android:layout_centerHorizontal="true" />
 
         </RelativeLayout>
 

@@ -1,4 +1,4 @@
-package com.emilflach.cobot.ViewControllers;
+package com.emilflach.cobot.ViewControllers.Adapters;
 
 /**
  * Cobot
@@ -47,7 +47,6 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             status = (TextView) view.findViewById(R.id.statusText);
             time = (TextView) view.findViewById(R.id.timeText);
             location = (TextView) view.findViewById(R.id.locationText);
-
         }
 
     }
@@ -83,11 +82,13 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     List<Product> coffees;
     Order order;
     CobotMain cobotMain;
+    boolean isEmpty;
 
-    OrderRVAdapter(List<Product> coffees, Order order, CobotMain cobotMain){
+    public OrderRVAdapter(List<Product> coffees, Order order, CobotMain cobotMain, boolean isEmpty){
         this.coffees = coffees;
         this.order = order;
         this.cobotMain = cobotMain;
+        this.isEmpty = isEmpty;
     }
 
     @Override
@@ -111,9 +112,15 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int i) {
         if (i == 0) {
             StatusViewHolder h = (StatusViewHolder) holder;
-            h.location.setText(String.valueOf(order.getDelivery_status()));
-            h.status.setText(String.valueOf(order.getLocation()));
-            h.time.setText(String.valueOf(order.getDelivered_at()));
+            if(isEmpty) {
+                h.location.setText(String.valueOf("No location set"));
+                h.status.setText(String.valueOf(CobotMain.statusMessage(-1)));
+                h.time.setText(String.valueOf("No estimated time"));
+            } else {
+                h.location.setText(String.valueOf(order.getLocation()));
+                h.status.setText(String.valueOf(CobotMain.statusMessage(order.getDelivery_status())));
+                h.time.setText(String.valueOf(order.getDelivered_at()));
+            }
         } else {
             i = i - 1;
             final COVHolder h = (COVHolder) holder;
@@ -124,7 +131,6 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             h.coffeeMilk.setText(String.valueOf(coffees.get(i).getMilk()));
             h.coffeeSugar.setText(String.valueOf(coffees.get(i).getSugar()));
             h.coffeeMug.setText(coffees.get(i).isMug() ? "Yes" : "No");
-
             h.deleteButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     deleteProduct(h);
@@ -161,7 +167,7 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             @Override
             public void onResponse(Response<ApiMessage> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    cobotMain.setAdapter();
+                    cobotMain.setAdapter(2);
                     Log.d("Message", response.body().message());
                 } else {
                     ApiError error = ErrorUtils.parseError(response, retrofit);
@@ -174,6 +180,17 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 Log.d("Error", t.getMessage());
             }
         });
+    }
+
+    public void clearData() {
+        int size = this.coffees.size() + 1;
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                this.coffees.remove(0);
+            }
+
+            this.notifyItemRangeRemoved(0, size);
+        }
     }
 }
 

@@ -4,10 +4,15 @@
     <style name="MyTheme" parent="Theme.AppCompat.Light">
         <!-- Main theme colors -->
         <!--   your app branding color for the app bar -->
-        <item name="colorPrimary">@color/material_deep_teal_500</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
         <!--   darker variant for the status bar and contextual app bars -->
-        <item name="colorPrimaryDark">@color/material_blue_grey_800</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
         <!--   theme UI controls like checkboxes and text fields -->
-        <item name="colorAccent">@color/material_deep_teal_200</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
     </style>
+
+    <color name="colorPrimary">#002142</color>
 </resources>

@@ -1,4 +1,4 @@
-package com.emilflach.cobot.ViewControllers;
+package com.emilflach.cobot.ViewControllers.Fragments;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -10,12 +10,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 
 import com.emilflach.cobot.CobotMain;
 import com.emilflach.cobot.Models.ApiError;
 import com.emilflach.cobot.Models.Product;
 import com.emilflach.cobot.R;
+import com.emilflach.cobot.ViewControllers.Adapters.CoffeeRVAdapter;
 import com.emilflach.cobot.api.ErrorUtils;
 import com.emilflach.cobot.api.ServiceGenerator;
 
@@ -31,7 +31,7 @@ import retrofit.Retrofit;
  * cobot
  * by Emil on 2015-11-07.
  */
-public class CoffeesFragment extends Fragment implements View.OnClickListener{
+public class CoffeesFragment extends Fragment {
 
     ServiceGenerator.UserClient userClient;
     private RecyclerView rv;
@@ -53,12 +53,6 @@ public class CoffeesFragment extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
         View v = inflater.inflate(R.layout.coffees_fragment, container, false);
-
-        //Add click listener to logout button
-        ImageButton l = (ImageButton) v.findViewById(R.id.logoutButton);
-
-
-        l.setOnClickListener(this);
 
         return v;
     }
@@ -85,14 +79,14 @@ public class CoffeesFragment extends Fragment implements View.OnClickListener{
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.logoutButton:
-                logout();
-                break;
-        }
-    }
+//    @Override
+//    public void onClick(View v) {
+//        switch (v.getId()) {
+//            case R.id.logoutButton:
+//                logout();
+//                break;
+//        }
+//    }
 
 
     /**
@@ -127,20 +121,6 @@ public class CoffeesFragment extends Fragment implements View.OnClickListener{
     }
 
 
-    /**
-     * Logs out user by removing credentials from sharedpreferences
-     */
-    public void logout() {
-        //TODO: Move this away from sharedpreferences
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("id", 0);
-        editor.putString("email", null);
-        editor.putString("password", null);
-        editor.apply();
 
-        CobotMain main = (CobotMain) getActivity();
-        main.setAdapter();
-    }
 
 }

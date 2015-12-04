@@ -1,4 +1,4 @@
-package com.emilflach.cobot.ViewControllers;
+package com.emilflach.cobot.ViewControllers.Adapters;
 
 
 
@@ -53,7 +53,6 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
         RelativeLayout coffeeHeader;
         RelativeLayout coffeeBody;
         Button orderButton;
-        Button atoButton;
         int coffeeType;
         Boolean collapsed = false;
 
@@ -72,14 +71,13 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
             coffeeHeader = (RelativeLayout)itemView.findViewById(R.id.header_wrap);
             coffeeBody = (RelativeLayout)itemView.findViewById(R.id.body_wrap);
             orderButton = (Button)itemView.findViewById(R.id.orderButton);
-            atoButton = (Button)itemView.findViewById(R.id.addToOrderButton);
         }
     }
 
     List<Product> coffees;
     CobotMain cobotMain;
 
-    CoffeeRVAdapter(List<Product> coffees, CobotMain cobotMain){
+    public CoffeeRVAdapter(List<Product> coffees, CobotMain cobotMain){
         this.coffees = coffees;
         this.cobotMain = cobotMain;
     }
@@ -114,21 +112,24 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
         holder.coffeeMug.setChecked(coffees.get(i).isMug());
 //        holder.coffeeLocation.setText(String.valueOf(coffees.get(i).location));
 
+        if (CobotMain.currentOrderId == 0) {
+            holder.orderButton.setText("Order");
+        } else {
+            holder.orderButton.setText("Add to order");
+        }
+
+        holder.orderButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                orderButton(holder);
+            }
+        });
+
         holder.coffeeHeader.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 collapse(holder);
             }
         });
-        holder.orderButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                order(holder);
-            }
-        });
-        holder.atoButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                addToOrder(holder, 0);
-            }
-        });
+
 
         //Close most cards on startup
         if (i != 0) {
@@ -220,9 +221,13 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
         }
     }
 
-
-
-
+    public void orderButton(CoffeeViewHolder holder) {
+        if (CobotMain.currentOrderId == 0) {
+            order(holder);
+        } else {
+            addToOrder(holder, CobotMain.currentOrderId);
+        }
+    }
 
     /**
      * Creates an order for a user
@@ -237,9 +242,11 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
                     System.out.println("Order add success");
                     addToOrder(holder, response.body().getId());
                 } else {
+                    if(response.message().equalsIgnoreCase("FORBIDDEN")) {
+                        addToOrder(holder, CobotMain.currentOrderId);
+                    }
                     ApiError error = ErrorUtils.parseError(response, retrofit);
                     Log.d("error message", error.message());
-                    //TODO: User notification or a smarter action, add the product to a current order?
                     System.out.println("Failed");
                 }
             }
@@ -281,9 +288,12 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
                 if (response.isSuccess()) {
                     System.out.println("Product add success");
 
-                    cobotMain.setAdapter();
+                    cobotMain.setAdapter(1);
                     //TODO: User notification
                 } else {
+                    if( response.message().equalsIgnoreCase("Not Found")) {
+                        order(holder);
+                    }
                     ApiError error = ErrorUtils.parseError(response, retrofit);
                     Log.d("error message", error.message());
                     //TODO: User notification
@@ -293,7 +303,7 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
 
             @Override
             public void onFailure(Throwable t) {
-                Log.d("Error", t.getMessage());
+                Log.d("Error", "wow" + t.getMessage());
             }
         });
 

@@ -1,20 +1,21 @@
-package com.emilflach.cobot.ViewControllers;
+package com.emilflach.cobot.ViewControllers.Fragments;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.emilflach.cobot.CobotMain;
 import com.emilflach.cobot.Models.ApiError;
 import com.emilflach.cobot.Models.Order;
 import com.emilflach.cobot.Models.Product;
 import com.emilflach.cobot.R;
+import com.emilflach.cobot.ViewControllers.Adapters.OrderRVAdapter;
 import com.emilflach.cobot.api.ErrorUtils;
 import com.emilflach.cobot.api.ServiceGenerator;
 
@@ -33,6 +34,8 @@ public class OrdersFragment extends Fragment {
     private RecyclerView rv;
     private static final String ARG_SECTION_NUMBER = "section_number";
     ServiceGenerator.UserClient userClient;
+    private SwipeRefreshLayout swipeContainer;
+
 
     public OrdersFragment() {
     }
@@ -48,8 +51,26 @@ public class OrdersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.orders_fragment, container, false);
         userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
-        return inflater.inflate(R.layout.orders_fragment, container, false);
+
+        swipeContainer = (SwipeRefreshLayout) v.findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                CobotMain cm = (CobotMain) getActivity();
+                cm.setAdapter(2);
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+
+        return v;
     }
 
     @Override
@@ -66,8 +87,9 @@ public class OrdersFragment extends Fragment {
 
             List<Product> products = new ArrayList<>();
             Order order = new Order();
+
             CobotMain cobotMain = (CobotMain) getActivity();
-            OrderRVAdapter adapter = new OrderRVAdapter(products, order, cobotMain);
+            OrderRVAdapter adapter = new OrderRVAdapter(products, order, cobotMain, true);
             rv.setAdapter(adapter);
 
             setOrders(view);
@@ -114,12 +136,13 @@ public class OrdersFragment extends Fragment {
             private List<Product> products = new ArrayList<>();
             @Override
             public void onResponse(Response<List<Product>> response, Retrofit retrofit) {
+
                 if (response.isSuccess()) {
                     for (Product product : response.body()) {
                         this.products.add(product);
                     }
                     CobotMain cobotMain = (CobotMain) getActivity();
-                    OrderRVAdapter adapter = new OrderRVAdapter(products, order, cobotMain);
+                    OrderRVAdapter adapter = new OrderRVAdapter(products, order, cobotMain, false);
                     rv.setAdapter(adapter);
                 } else {
                     ApiError error = ErrorUtils.parseError(response, retrofit);

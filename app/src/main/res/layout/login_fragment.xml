@@ -5,18 +5,6 @@
     android:fitsSystemWindows="true"
     android:background="#00FFFFFF">
 
-    <TextView
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
-        android:gravity="center|top"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Login"
-        android:id="@+id/textViewCoffee"
-        android:layout_centerHorizontal="true"
-        android:textColor="#656565" />
-
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -66,52 +54,12 @@
             android:layout_below="@+id/layoutLogin"
             android:layout_marginTop="50dp">
 
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:ems="10"
-                android:id="@+id/editTextName"
-                android:hint="Name" />
-
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:ems="10"
-                android:id="@+id/editTextPassword"
-                android:layout_below="@+id/editTextEmail"
-                android:password="true"
-                android:hint="Password" />
-
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:ems="10"
-                android:id="@+id/editTextEmail"
-                android:layout_below="@+id/editTextLocation"
-                android:hint="E-mail" />
-
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/editTextLocation"
-                android:layout_below="@+id/editTextName"
-                android:layout_alignStart="@+id/editTextName"
-                android:layout_alignEnd="@+id/editTextName"
-                android:hint="Location"
-                android:foregroundTint="#FFFFFF"
-                android:inputType="number" />
-
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sign up"
+                android:text="New account"
                 android:id="@+id/register"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@+id/editTextPassword"
-                android:layout_marginTop="20dp" />
+                android:layout_centerHorizontal="true" />
         </RelativeLayout>
 
     </RelativeLayout>

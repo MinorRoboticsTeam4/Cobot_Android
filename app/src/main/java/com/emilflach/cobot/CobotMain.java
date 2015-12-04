@@ -11,10 +11,11 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.emilflach.cobot.ViewControllers.CoffeeRVAdapter;
-import com.emilflach.cobot.ViewControllers.CoffeesFragment;
-import com.emilflach.cobot.ViewControllers.LoginFragment;
-import com.emilflach.cobot.ViewControllers.OrdersFragment;
+import com.emilflach.cobot.ViewControllers.Adapters.CoffeeRVAdapter;
+import com.emilflach.cobot.ViewControllers.Fragments.CoffeesFragment;
+import com.emilflach.cobot.ViewControllers.Fragments.LoginFragment;
+import com.emilflach.cobot.ViewControllers.Fragments.OrdersFragment;
+import com.emilflach.cobot.ViewControllers.Fragments.SettingsFragment;
 
 
 public class CobotMain extends AppCompatActivity {
@@ -33,14 +34,15 @@ public class CobotMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cobot_main);
         mViewPager = (ViewPager) findViewById(R.id.container);
-        setAdapter();
+        mViewPager.setOffscreenPageLimit(2);
+        setAdapter(1);
     }
 
 
     /**
      * Sets adapter, can be used to refresh data
      */
-    public void setAdapter() {
+    public void setAdapter(int location) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         id = preferences.getInt("id", 0);
         email = preferences.getString("email", null);
@@ -52,6 +54,7 @@ public class CobotMain extends AppCompatActivity {
 
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setCurrentItem(location, true);
     }
 
     /**
@@ -86,6 +89,35 @@ public class CobotMain extends AppCompatActivity {
         }
     }
 
+    public static String statusMessage(int i) {
+        switch (i) {
+            case -1:
+                return "No current order";
+            case 0: //I have no shit yet for this
+                return "Order added to queue";
+//            case 1: //Cappuccino
+//                return R.drawable.black;
+//            case 2: //Espresso
+//                return R.drawable.black;
+//            case 3: //Cafe au Lait
+//                return R.drawable.black;
+//            case 4: //Wiener Melange
+//                return R.drawable.black;
+//            case 5: //Double Espresso
+//                return R.drawable.black;
+//            case 6: //Cafe Mocca
+//                return R.drawable.black;
+//            case 7: //Cafe Macchiato
+//                return R.drawable.black;
+//            case 8: //Espresso choc
+//                return R.drawable.black;
+//            case 9://Hot Chocolate
+//                return R.drawable.black;
+            default:
+                return "No current order";
+        }
+    }
+
 
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
@@ -101,8 +133,10 @@ public class CobotMain extends AppCompatActivity {
             } else {
                 switch (position) {
                     case 0:
-                        return CoffeesFragment.newInstance(position + 1);
+                        return SettingsFragment.newInstance(position + 1);
                     case 1:
+                        return CoffeesFragment.newInstance(position + 1);
+                    case 2:
                         return OrdersFragment.newInstance(position + 1);
                     default:
                         return null;
@@ -115,7 +149,7 @@ public class CobotMain extends AppCompatActivity {
             if(id == 0) {
                 return 1;
             } else {
-                return 2;
+                return 3;
             }
         }
 
@@ -126,8 +160,10 @@ public class CobotMain extends AppCompatActivity {
             } else {
                 switch (position) {
                     case 0:
-                        return "Coffees";
+                        return "Settings";
                     case 1:
+                        return "Coffees";
+                    case 2:
                         return "Orders";
                 }
                 return null;

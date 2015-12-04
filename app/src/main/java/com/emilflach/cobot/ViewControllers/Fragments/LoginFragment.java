@@ -1,4 +1,4 @@
-package com.emilflach.cobot.ViewControllers;
+package com.emilflach.cobot.ViewControllers.Fragments;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,6 +18,8 @@ import com.emilflach.cobot.R;
 import com.emilflach.cobot.api.ErrorUtils;
 import com.emilflach.cobot.api.ServiceGenerator;
 
+import java.util.Random;
+
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -30,11 +32,6 @@ import retrofit.Retrofit;
 public class LoginFragment extends Fragment implements View.OnClickListener{
 
     private static final String ARG_SECTION_NUMBER = "section_number";
-
-    private EditText name;
-    private EditText location;
-    private EditText email;
-    private EditText password;
 
     private EditText loginEmail;
     private EditText loginPassword;
@@ -63,11 +60,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         r.setOnClickListener(this);
         l.setOnClickListener(this);
 
-        name = (EditText) v.findViewById(R.id.editTextName);
-        location = (EditText) v.findViewById(R.id.editTextLocation);
-        email = (EditText) v.findViewById(R.id.editTextEmail);
-        password = (EditText) v.findViewById(R.id.editTextPassword);
-
         loginEmail = (EditText) v.findViewById(R.id.editTextLoginEmail);
         loginPassword = (EditText) v.findViewById(R.id.editTextLoginPassword);
 
@@ -84,26 +76,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.register:
-                register(v);
+                register(v, 0);
                 break;
             case R.id.login:
                 login(v);
                 break;
         }
-    }
-
-    /**
-     * Sets the registration fields
-     * @param name name field
-     * @param location location field
-     * @param email email field
-     * @param password password field
-     */
-    public void setText(String name, int location, String email, String password) {
-        this.name.setText(name);
-        this.location.setText(String.valueOf(location));
-        this.email.setText(email);
-        this.password.setText(password);
     }
 
 
@@ -122,14 +100,14 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
      * Registers the user after button press, after successful registration authenticate() is called
      * @param v
      */
-    public void register(View v) {
+    public void register(final View v, int tries) {
+        final int currentTries = tries + 1;
 
-        final String name = this.name.getText().toString();
-        final int location = Integer.parseInt(this.location.getText().toString());
-        final String email = this.email.getText().toString();
-        final String password = this.password.getText().toString();
-
-        setText("", 0, "", "");
+        Random random = new Random();
+        final String name = "Bound to phone";
+        final int location = 1;
+        final String email = generateString(random, "abcdefghijklmnopqrstxyz", 30) + "@anonymous.user";
+        final String password = generateString(random, "abdcdefghijklmnopqrstxyz", 30);
 
         ServiceGenerator.UserClient userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
         Call<User> call = userClient.createUser(name, email, password, location);
@@ -140,7 +118,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                 if (response.isSuccess()) {
                     setCredentials(email, password, response.body().getId());
                 } else {
-                    setText(name, location, email, password);
+                    if (currentTries < 2) {
+                        register(v, currentTries);
+                    }
                     ApiError error = ErrorUtils.parseError(response, retrofit);
                     Log.d("error message", error.message());
 
@@ -196,14 +176,24 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     }
 
     public void setCredentials(String email, String password, int id) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt("id", id);
         editor.putString("email", email);
         editor.putString("password", password);
         editor.apply();
         CobotMain main = (CobotMain) getActivity();
-        main.setAdapter();
+        main.setAdapter(1);
+    }
+
+    public static String generateString(Random rng, String characters, int length)
+    {
+        char[] text = new char[length];
+        for (int i = 0; i < length; i++)
+        {
+            text[i] = characters.charAt(rng.nextInt(characters.length()));
+        }
+        return new String(text);
     }
 
 }

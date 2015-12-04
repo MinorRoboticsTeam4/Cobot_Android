@@ -1,7 +1,8 @@
-package com.emilflach.cobot;
+package com.emilflach.cobot.ViewControllers;
 
 /**
- * Created by Emil on 2015-11-04.
+ * Cobot
+ * by Emil on 2015-11-04.
  */
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -12,9 +13,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.emilflach.cobot.Models.Product;
+import com.emilflach.cobot.R;
+
 import java.util.List;
 
-public class RVAdapterOrders extends RecyclerView.Adapter<RVAdapterOrders.COVHolder> {
+public class OrderRVAdapter extends RecyclerView.Adapter<OrderRVAdapter.COVHolder> {
 
     //    public static class StatusViewHolder extends RecyclerView.ViewHolder {
 //
@@ -56,7 +60,7 @@ public class RVAdapterOrders extends RecyclerView.Adapter<RVAdapterOrders.COVHol
 
     List<Product> coffees;
 
-    RVAdapterOrders(List<Product> coffees){
+    OrderRVAdapter(List<Product> coffees){
         this.coffees = coffees;
     }
 
@@ -67,9 +71,7 @@ public class RVAdapterOrders extends RecyclerView.Adapter<RVAdapterOrders.COVHol
 
     @Override
     public COVHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_orders, viewGroup, false);
-        COVHolder cvh = new COVHolder(v);
-
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.order_item, viewGroup, false);
 
         //        if(i == 0) {
 //            StatusViewHolder svh = new StatusViewHolder(v);
@@ -78,16 +80,16 @@ public class RVAdapterOrders extends RecyclerView.Adapter<RVAdapterOrders.COVHol
 //        }
 
 
-        return cvh;
+        return new COVHolder(v);
     }
 
     @Override
     public void onBindViewHolder(final COVHolder coffeeViewHolder, int i) {
-        coffeeViewHolder.coffeeName.setText(coffees.get(i).name);
-        coffeeViewHolder.coffeeStrength.setText(String.valueOf(coffees.get(i).strength));
-        coffeeViewHolder.coffeeMilk.setText(String.valueOf(coffees.get(i).milk));
-        coffeeViewHolder.coffeeSugar.setText(String.valueOf(coffees.get(i).sugar));
-        coffeeViewHolder.coffeeMug.setText(coffees.get(i).mug ? "Yes" : "No");
+        coffeeViewHolder.coffeeName.setText(coffees.get(i).getName());
+        coffeeViewHolder.coffeeStrength.setText(String.valueOf(coffees.get(i).getStrength()));
+        coffeeViewHolder.coffeeMilk.setText(String.valueOf(coffees.get(i).getMilk()));
+        coffeeViewHolder.coffeeSugar.setText(String.valueOf(coffees.get(i).getSugar()));
+        coffeeViewHolder.coffeeMug.setText(coffees.get(i).isMug() ? "Yes" : "No");
 //        coffeeViewHolder.coffeePhoto.setImageResource(coffees.get(i).photoId);
     }
 

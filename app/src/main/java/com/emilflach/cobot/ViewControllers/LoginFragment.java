@@ -1,4 +1,4 @@
-package com.emilflach.cobot;
+package com.emilflach.cobot.ViewControllers;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,17 +11,26 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.emilflach.cobot.CobotMain;
+import com.emilflach.cobot.Models.ApiError;
+import com.emilflach.cobot.Models.User;
+import com.emilflach.cobot.R;
+import com.emilflach.cobot.api.ErrorUtils;
+import com.emilflach.cobot.api.ServiceGenerator;
+
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
 /**
- * Created by Emil on 2015-11-07.
+ * cobot
+ * by Emil on 2015-11-07.
  */
 public class LoginFragment extends Fragment implements View.OnClickListener{
 
     private static final String ARG_SECTION_NUMBER = "section_number";
+    ServiceGenerator.UserClient userClient;
 
     private EditText name;
     private EditText location;
@@ -45,6 +54,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.login_fragment, container, false);
 
@@ -86,10 +97,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
     /**
      * Sets the registration fields
-     * @param name
-     * @param location
-     * @param email
-     * @param password
+     * @param name name field
+     * @param location location field
+     * @param email email field
+     * @param password password field
      */
     public void setText(String name, String location, String email, String password) {
         this.name.setText(name);
@@ -101,7 +112,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
     /**
      * Function that gets called after login button press
-     * @param v
+     * @param v view to get login fields from
      */
     public void login(View v) {
         String email = this.loginEmail.getText().toString();
@@ -112,7 +123,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
     /**
      * Registers the user after button press, after successful registration authenticate() is called
-     * @param v
+     * @param v view to get register fields from
      */
     public void register(View v) {
 
@@ -123,7 +134,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
         setText("", "", "", "");
 
-        ServiceGenerator.UserClient userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
         Call<User> call = userClient.createUser(name, email, password, location);
         call.enqueue(new Callback<User>() {
 
@@ -160,10 +170,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
      * @param password password to authenticate with
      */
     public void authenticate(final String email, final String password) {
-        MainActivity.email = email;
-        MainActivity.password = password;
+        CobotMain.email = email;
+        CobotMain.password = password;
 
-        ServiceGenerator.UserClient userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
         Call<User> call = userClient.authenticate();
         call.enqueue(new Callback<User>() {
             @Override
@@ -173,12 +182,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                     //TODO: Move this away from shared preferences
                     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
                     SharedPreferences.Editor editor = preferences.edit();
-                    editor.putInt("id", response.body().id);
+                    editor.putInt("id", response.body().getId());
                     editor.putString("email", email);
                     editor.putString("password", password);
                     editor.apply();
 
-                    MainActivity main = (MainActivity) getActivity();
+                    CobotMain main = (CobotMain) getActivity();
                     main.setAdapter();
                     System.out.println("Success");
                 } else {

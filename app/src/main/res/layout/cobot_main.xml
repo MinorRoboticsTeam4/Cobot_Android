@@ -6,13 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.emilflach.cobot.MainActivity">
+    tools:context="com.emilflach.cobot.CobotMain">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:background="#002142" />
+        android:background="#eee" />
 
 </android.support.design.widget.CoordinatorLayout>

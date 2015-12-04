@@ -1,4 +1,4 @@
-package com.emilflach.cobot;
+package com.emilflach.cobot.ViewControllers;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -8,10 +8,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import com.emilflach.cobot.CobotMain;
+import com.emilflach.cobot.Models.ApiError;
+import com.emilflach.cobot.Models.Order;
+import com.emilflach.cobot.Models.Product;
+import com.emilflach.cobot.R;
+import com.emilflach.cobot.api.ErrorUtils;
+import com.emilflach.cobot.api.ServiceGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +27,12 @@ import retrofit.Response;
 import retrofit.Retrofit;
 
 /**
- * Created by Emil on 2015-11-06.
+ * ${NAME}Created by Emil on 2015-11-06.
  */
 public class OrdersFragment extends Fragment {
-    private List<Coffee> coffees;
     private RecyclerView rv;
     private static final String ARG_SECTION_NUMBER = "section_number";
+    ServiceGenerator.UserClient userClient;
 
     private TextView location;
     private TextView time;
@@ -47,6 +52,7 @@ public class OrdersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
         return inflater.inflate(R.layout.orders_fragment, container, false);
     }
 
@@ -56,14 +62,14 @@ public class OrdersFragment extends Fragment {
 
         //Set the adapter with retrieved information
         View view = getView();
+        if (view != null) {
         rv = (RecyclerView) view.findViewById(R.id.rv);
-        if (rv != null) {
             LinearLayoutManager llm = new LinearLayoutManager(getActivity());
             rv.setLayoutManager(llm);
             rv.setHasFixedSize(true);
 
             List<Product> products = new ArrayList<>();
-            RVAdapterOrders adapter = new RVAdapterOrders(products);
+            OrderRVAdapter adapter = new OrderRVAdapter(products);
             rv.setAdapter(adapter);
 
             setOrders(view);
@@ -73,26 +79,25 @@ public class OrdersFragment extends Fragment {
 
     /**
      * Loads the order related to a user and displays it
-     * @param view
+     * @param view the view to which the order should be set
      */
     private void setOrders(View view) {
         location = (TextView) view.findViewById(R.id.textViewLocation);
         time = (TextView) view.findViewById(R.id.textViewTime);
         status = (TextView) view.findViewById(R.id.textViewStatus);
 
-        ServiceGenerator.UserClient userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
-        Call<List<Order>> call = userClient.orders(MainActivity.id);
+        Call<List<Order>> call = userClient.orders(CobotMain.id);
         call.enqueue(new Callback<List<Order>>() {
 
             @Override
             public void onResponse(Response<List<Order>> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     for (Order order : response.body()) {
-                        location.setText(String.valueOf(order.id));
-                        time.setText(String.valueOf(order.user));
-                        status.setText(String.valueOf(order.delivery_status));
-                        MainActivity.currentOrderId = order.id;
-                        setOrderProducts(order.id);
+                        location.setText(String.valueOf(order.getId()));
+                        time.setText(String.valueOf(order.getUser()));
+                        status.setText(String.valueOf(order.getDelivery_status()));
+                        CobotMain.currentOrderId = order.getId();
+                        setOrderProducts(order.getId());
                     }
                 } else {
                     ApiError error = ErrorUtils.parseError(response, retrofit);
@@ -113,8 +118,6 @@ public class OrdersFragment extends Fragment {
      * @param order_id the order for which products should be returned
      */
     private void setOrderProducts(int order_id) {
-
-        ServiceGenerator.UserClient userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
         Call<List<Product>> call = userClient.orderProducts(order_id);
         call.enqueue(new Callback<List<Product>>() {
 
@@ -126,7 +129,7 @@ public class OrdersFragment extends Fragment {
                     for (Product product : response.body()) {
                         this.products.add(product);
                     }
-                    RVAdapterOrders adapter = new RVAdapterOrders(products);
+                    OrderRVAdapter adapter = new OrderRVAdapter(products);
                     rv.setAdapter(adapter);
                 } else {
                     ApiError error = ErrorUtils.parseError(response, retrofit);

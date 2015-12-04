@@ -1,10 +1,7 @@
-package com.emilflach.cobot;
+package com.emilflach.cobot.ViewControllers;
 
 
 
-import android.app.Activity;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,12 +13,19 @@ import android.view.animation.RotateAnimation;
 import android.view.animation.Transformation;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.emilflach.cobot.CobotMain;
+import com.emilflach.cobot.Models.ApiError;
+import com.emilflach.cobot.Models.Order;
+import com.emilflach.cobot.Models.Product;
+import com.emilflach.cobot.R;
+import com.emilflach.cobot.api.ErrorUtils;
+import com.emilflach.cobot.api.ServiceGenerator;
 
 import java.util.List;
 
@@ -30,7 +34,9 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
-public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CoffeeViewHolder> {
+public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.CoffeeViewHolder> {
+
+    ServiceGenerator.UserClient userClient;
 
     public static class CoffeeViewHolder extends RecyclerView.ViewHolder {
 
@@ -71,11 +77,11 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CoffeeViewHolder> 
     }
 
     List<Product> coffees;
-    MainActivity mainActivity;
+    CobotMain cobotMain;
 
-    RVAdapter(List<Product> coffees, MainActivity mainActivity){
+    CoffeeRVAdapter(List<Product> coffees, CobotMain cobotMain){
         this.coffees = coffees;
-        this.mainActivity = mainActivity;
+        this.cobotMain = cobotMain;
     }
 
     @Override
@@ -92,19 +98,20 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CoffeeViewHolder> 
 
     @Override
     public CoffeeViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.coffee_item, viewGroup, false);
+        userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
         return new CoffeeViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(final CoffeeViewHolder holder, int i) {
-        holder.coffeeName.setText(coffees.get(i).name);
-        holder.coffeePhoto.setImageResource(coffeeImage(coffees.get(i).type));
-        holder.coffeeType = coffees.get(i).type;
-        holder.coffeeStrength.setProgress(coffees.get(i).strength);
-        holder.coffeeMilk.setProgress(coffees.get(i).milk);
-        holder.coffeeSugar.setProgress(coffees.get(i).sugar);
-        holder.coffeeMug.setChecked(coffees.get(i).mug);
+        holder.coffeeName.setText(coffees.get(i).getName());
+        holder.coffeePhoto.setImageResource(coffeeImage(coffees.get(i).getType()));
+        holder.coffeeType = coffees.get(i).getType();
+        holder.coffeeStrength.setProgress(coffees.get(i).getStrength());
+        holder.coffeeMilk.setProgress(coffees.get(i).getMilk());
+        holder.coffeeSugar.setProgress(coffees.get(i).getSugar());
+        holder.coffeeMug.setChecked(coffees.get(i).isMug());
 //        holder.coffeeLocation.setText(String.valueOf(coffees.get(i).location));
 
         holder.coffeeHeader.setOnClickListener(new View.OnClickListener() {
@@ -127,7 +134,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CoffeeViewHolder> 
         if (i != 0) {
             close(holder);
         } else {
-            MainActivity.theCard = holder;
+            CobotMain.theCard = holder;
         }
 
     }
@@ -143,15 +150,15 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CoffeeViewHolder> 
      * @param holder the selected CoffeeViewHolder
      */
     public void collapse(CoffeeViewHolder holder) {
-        if(MainActivity.cardHeight == 0) {
-            MainActivity.cardHeight = MainActivity.theCard.coffeeBody.getHeight();
+        if(CobotMain.cardHeight == 0) {
+            CobotMain.cardHeight = CobotMain.theCard.coffeeBody.getHeight();
         }
 
         if(holder.collapsed) {
             holder.collapsed = false;
 
             //resize card
-            ResizeAnimation resizeAnimation = new ResizeAnimation(holder.coffeeBody, 0, MainActivity.cardHeight);
+            ResizeAnimation resizeAnimation = new ResizeAnimation(holder.coffeeBody, 0, CobotMain.cardHeight);
             resizeAnimation.setDuration(200);
             holder.coffeeWrap.startAnimation(resizeAnimation);
 
@@ -165,7 +172,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CoffeeViewHolder> 
             holder.collapsed = true;
 
             //resize card
-            ResizeAnimation resizeAnimation = new ResizeAnimation(holder.coffeeBody, MainActivity.cardHeight, 0);
+            ResizeAnimation resizeAnimation = new ResizeAnimation(holder.coffeeBody, CobotMain.cardHeight, 0);
             resizeAnimation.setDuration(200);
             holder.coffeeWrap.startAnimation(resizeAnimation);
 
@@ -184,7 +191,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CoffeeViewHolder> 
      */
     public void close(CoffeeViewHolder holder) {
         holder.collapsed = true;
-        ResizeAnimation resizeAnimation = new ResizeAnimation(holder.coffeeBody, MainActivity.cardHeight, 0);
+        ResizeAnimation resizeAnimation = new ResizeAnimation(holder.coffeeBody, CobotMain.cardHeight, 0);
         resizeAnimation.setDuration(0);
         holder.coffeeWrap.startAnimation(resizeAnimation);
     }
@@ -216,11 +223,11 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CoffeeViewHolder> 
 
     /**
      * Responds the corresponding integer of a drawable from coffee type
-     * @param $i type of coffee
+     * @param i type of coffee
      * @return corresponding image
      */
-    public int coffeeImage(int $i) {
-        switch ($i) {
+    public int coffeeImage(int i) {
+        switch (i) {
             case 0: //Black
                 return R.drawable.black;
 //            case 1: //Cappuccino
@@ -253,14 +260,13 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CoffeeViewHolder> 
      * @param holder The CoffeeViewHolder which has to be ordered
      */
     public void order(final CoffeeViewHolder holder) {
-        ServiceGenerator.UserClient userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
-        Call<Order> call = userClient.createOrder(MainActivity.id);
+        Call<Order> call = userClient.createOrder(CobotMain.id);
         call.enqueue(new Callback<Order>() {
             @Override
             public void onResponse(Response<Order> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     System.out.println("Order add success");
-                    addToOrder(holder, response.body().id);
+                    addToOrder(holder, response.body().getId());
                 } else {
                     ApiError error = ErrorUtils.parseError(response, retrofit);
                     Log.d("error message", error.message());
@@ -283,15 +289,13 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CoffeeViewHolder> 
      */
     public void addToOrder(final CoffeeViewHolder holder, int id) {
         if (id == 0) {
-            id = MainActivity.currentOrderId;
+            id = CobotMain.currentOrderId;
             if (id == 0) {
                 Log.d("No valid order id:", String.valueOf(id));
                 //TODO: User notification
                 return;
             }
         }
-        ServiceGenerator.UserClient userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
-
         Call<Product> call = userClient.createOrderProduct(
                 id,
                 String.valueOf(holder.coffeeName.getText()),
@@ -309,7 +313,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CoffeeViewHolder> 
                 if (response.isSuccess()) {
                     System.out.println("Product add success");
 
-                    mainActivity.setAdapter();
+                    cobotMain.setAdapter();
                     //TODO: User notification
                 } else {
                     ApiError error = ErrorUtils.parseError(response, retrofit);

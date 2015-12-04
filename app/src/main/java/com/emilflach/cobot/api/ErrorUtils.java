@@ -1,5 +1,6 @@
-package com.emilflach.cobot;
+package com.emilflach.cobot.api;
 
+import com.emilflach.cobot.Models.ApiError;
 import com.squareup.okhttp.ResponseBody;
 
 import java.io.IOException;
@@ -10,7 +11,8 @@ import retrofit.Response;
 import retrofit.Retrofit;
 
 /**
- * Created by Emil on 2015-11-24.
+ * cobot
+ * by Emil on 2015-11-24.
  */
 public class ErrorUtils {
 
@@ -18,7 +20,7 @@ public class ErrorUtils {
      * Parses the error message from a failed response
      * @param response the response object after failing
      * @param retrofit the corresponding retrofit object
-     * @return
+     * @return returns an ApiError object
      */
     public static ApiError parseError(Response response, Retrofit retrofit) {
         Converter<ResponseBody, ApiError> converter =

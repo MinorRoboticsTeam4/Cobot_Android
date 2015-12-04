@@ -1,9 +1,12 @@
-package com.emilflach.cobot;
+package com.emilflach.cobot.api;
 
 
 import android.util.Base64;
-import android.util.Log;
 
+import com.emilflach.cobot.CobotMain;
+import com.emilflach.cobot.Models.Order;
+import com.emilflach.cobot.Models.Product;
+import com.emilflach.cobot.Models.User;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -28,8 +31,8 @@ public class ServiceGenerator {
                     .addConverterFactory(GsonConverterFactory.create());
 
     public static <S> S createService(Class<S> serviceClass) {
-        String username = MainActivity.email;
-        String password = MainActivity.password;
+        String username = CobotMain.email;
+        String password = CobotMain.password;
         if (username != null && password != null) {
             String credentials = username + ":" + password;
             final String basic = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);

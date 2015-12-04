@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="accent_material_light_1">#0ca5b0</color>
-    <color name="bright_foreground_material_light">#ffffff</color>
-    <color name="black">#000000</color>
-    <color name="primary_text_default_material_light">#deffffff</color>
+    <!-- inherit from the material theme -->
+    <style name="MyTheme" parent="Theme.AppCompat.Light">
+        <!-- Main theme colors -->
+        <!--   your app branding color for the app bar -->
+        <item name="colorPrimary">@color/material_deep_teal_500</item>
+        <!--   darker variant for the status bar and contextual app bars -->
+        <item name="colorPrimaryDark">@color/material_blue_grey_800</item>
+        <!--   theme UI controls like checkboxes and text fields -->
+        <item name="colorAccent">@color/material_deep_teal_200</item>
+    </style>
 </resources>

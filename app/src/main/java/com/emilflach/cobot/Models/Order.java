@@ -7,7 +7,7 @@ package com.emilflach.cobot.Models;
 public class Order {
     private int id = 0;
     private int user = 0;
-    private String location = "No location";
+    private int location = 0;
     private int delivery_status = 0;
     private String delivered_at = "No time";
 
@@ -30,11 +30,11 @@ public class Order {
         this.user = user;
     }
 
-    public String getLocation() {
+    public int getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(int location) {
         this.location = location;
     }
 

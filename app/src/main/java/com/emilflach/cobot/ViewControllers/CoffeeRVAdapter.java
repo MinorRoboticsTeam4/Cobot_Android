@@ -269,7 +269,6 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
                 id,
                 String.valueOf(holder.coffeeName.getText()),
                 holder.coffeeType,
-                holder.coffeeType,
                 holder.coffeeStrength.getProgress(),
                 holder.coffeeMilk.getProgress(),
                 holder.coffeeSugar.getProgress(),

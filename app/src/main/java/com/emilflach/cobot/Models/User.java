@@ -9,9 +9,9 @@ public class User {
     private String name;
     private String email;
     private String password;
-    private String location;
+    private int location;
 
-    User(int id, String name, String email, String password, String location) {
+    User(int id, String name, String email, String password, int location) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -51,11 +51,11 @@ public class User {
         this.password = password;
     }
 
-    public String getLocation() {
+    public int getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(int location) {
         this.location = location;
     }
 }

@@ -99,9 +99,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
      * @param email email field
      * @param password password field
      */
-    public void setText(String name, String location, String email, String password) {
+    public void setText(String name, int location, String email, String password) {
         this.name.setText(name);
-        this.location.setText(location);
+        this.location.setText(String.valueOf(location));
         this.email.setText(email);
         this.password.setText(password);
     }
@@ -125,11 +125,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     public void register(View v) {
 
         final String name = this.name.getText().toString();
-        final String location = this.location.getText().toString();
+        final int location = Integer.parseInt(this.location.getText().toString());
         final String email = this.email.getText().toString();
         final String password = this.password.getText().toString();
 
-        setText("", "", "", "");
+        setText("", 0, "", "");
 
         ServiceGenerator.UserClient userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
         Call<User> call = userClient.createUser(name, email, password, location);

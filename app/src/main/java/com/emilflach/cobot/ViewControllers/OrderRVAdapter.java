@@ -158,11 +158,11 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void deleteProduct(COVHolder h) {
         Call<ApiMessage> call = userClient.deleteOrderProduct(CobotMain.currentOrderId, h.productid);
         call.enqueue(new Callback<ApiMessage>() {
-            private List<Product> products = new ArrayList<>();
             @Override
             public void onResponse(Response<ApiMessage> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     cobotMain.setAdapter();
+                    Log.d("Message", response.body().message());
                 } else {
                     ApiError error = ErrorUtils.parseError(response, retrofit);
                     Log.d("error message", error.message());

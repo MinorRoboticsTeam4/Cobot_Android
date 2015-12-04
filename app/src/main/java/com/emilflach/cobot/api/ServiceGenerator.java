@@ -89,7 +89,7 @@ public class ServiceGenerator {
                 @Field("name") String name,
                 @Field("email") String email,
                 @Field("password") String password,
-                @Field("location") String location
+                @Field("location") int location
         );
 
         @POST("/users/{id}/orders")
@@ -103,7 +103,6 @@ public class ServiceGenerator {
                 @Path("id") int id,
                 @Field("name") String name,
                 @Field("type") int type,
-                @Field("image_path") int image_path,
                 @Field("option_strength") int strength,
                 @Field("option_milk") int milk,
                 @Field("option_sugar") int sugar,

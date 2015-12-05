@@ -217,12 +217,9 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
                 String sp = String.valueOf(p);
 
                 switch (seekBar.getId()) {
-                    case R.id.seekBarStrength:
-                        holder.strengthValue.setText(sp);
-                    case R.id.seekBarMilk:
-                        holder.milkValue.setText(sp);
-                    case R.id.seekBarSugar:
-                        holder.sugarValue.setText(sp);
+                    case R.id.seekBarStrength: holder.strengthValue.setText(sp); break;
+                    case R.id.seekBarMilk: holder.milkValue.setText(sp); break;
+                    case R.id.seekBarSugar: holder.sugarValue.setText(sp); break;
                 }
 
             }
@@ -243,13 +240,13 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
     }
 
     public int limitProgress(int p) {
-        if(p < 50) {
+        if(p <= 50) {
             p = 0;
-        } else if ( p > 50 && p < 150) {
+        } else if ( p > 50 && p <= 150) {
             p = 100;
-        } else if ( p > 150 && p < 250) {
+        } else if ( p > 150 && p <= 250) {
             p = 200;
-        } else if ( p > 250 && p < 350) {
+        } else if ( p > 250 && p <= 350) {
             p = 300;
         } else if ( p > 350) {
             p = 400;

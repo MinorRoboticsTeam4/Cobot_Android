@@ -115,5 +115,18 @@ public class ServiceGenerator {
                 @Path("productid") int productid
         );
 
+        @FormUrlEncoded
+        @PUT("/users/{userid}/products/{productid}")
+        Call<Product> updateProduct(
+                @Path("userid") int userid,
+                @Path("productid") int productid,
+                @Field("name") String name,
+                @Field("type") int type,
+                @Field("option_strength") int strength,
+                @Field("option_milk") int milk,
+                @Field("option_sugar") int sugar,
+                @Field("option_mug") int mug
+        );
+
     }
 }

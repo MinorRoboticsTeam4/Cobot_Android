@@ -22,12 +22,14 @@ public class CobotMain extends AppCompatActivity {
 
     private ViewPager mViewPager;
 
+    public final static int milkScale = 100;
     public static int id = 0; //Current user id
     public static int currentOrderId = 0; //Current order id
     public static String email = null; //Email of logged in user
     public static String password = null; //Email of logged in user
     public static int cardHeight = 0; //Height of card, set at first run
     public static CoffeeRVAdapter.CoffeeViewHolder theCard = null; //Card to get the height from
+    public static OrdersFragment ordersFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,7 +166,7 @@ public class CobotMain extends AppCompatActivity {
                     case 1:
                         return "Coffees";
                     case 2:
-                        return "Orders";
+                        return "Order";
                 }
                 return null;
             }

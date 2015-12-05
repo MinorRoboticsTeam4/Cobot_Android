@@ -78,11 +78,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Strength"
+                android:text="Strength:"
                 android:id="@+id/textViewStrength"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_marginStart="15dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="2"
+                android:id="@+id/strengthValue"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentStart="false"
+                android:layout_marginStart="5dp"
+                android:textStyle="bold"
+                android:layout_toRightOf="@+id/textViewStrength" />
 
             <android.support.v7.widget.AppCompatSeekBar
                 android:layout_width="match_parent"
@@ -91,8 +103,8 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/textViewStrength"
-                android:max="4"
-                android:progress="2"
+                android:max="400"
+                android:progress="200"
                 android:thumbTint="@color/colorPrimary"
                 android:progressTint="@color/colorPrimary"
                 android:theme="@style/AppTheme.Base"/>
@@ -101,20 +113,33 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Milk"
+                android:text="Milk:"
                 android:id="@+id/textViewMilk"
                 android:layout_below="@+id/seekBarStrength"
                 android:layout_alignLeft="@+id/textViewStrength"
                 android:layout_alignStart="@+id/textViewStrength"
                 android:layout_marginTop="20dp" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="2"
+                android:id="@+id/milkValue"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentStart="false"
+                android:layout_marginStart="5dp"
+                android:textStyle="bold"
+                android:layout_toRightOf="@+id/textViewMilk"
+                android:layout_alignBaseline="@+id/textViewMilk" />
+
             <android.support.v7.widget.AppCompatSeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/seekBarMilk"
                 android:layout_below="@+id/textViewMilk"
-                android:max="4"
-                android:progress="2"
+                android:max="400"
+                android:progress="200"
                 android:layout_alignStart="@+id/seekBarStrength"
                 android:layout_alignRight="@+id/seekBarStrength"
                 android:layout_alignEnd="@+id/seekBarStrength"
@@ -126,7 +151,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Sugar"
+                android:text="Sugar:"
                 android:id="@+id/textViewSugar"
                 android:layout_alignParentLeft="false"
                 android:layout_marginTop="20dp"
@@ -134,14 +159,27 @@
                 android:layout_alignStart="@+id/textViewStrength"
                 android:layout_alignParentStart="false" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="2"
+                android:id="@+id/sugarValue"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentStart="false"
+                android:layout_marginStart="5dp"
+                android:textStyle="bold"
+                android:layout_toRightOf="@+id/textViewSugar"
+                android:layout_alignBaseline="@+id/textViewSugar" />
+
             <android.support.v7.widget.AppCompatSeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/seekBarSugar"
                 android:layout_below="@+id/textViewSugar"
                 android:longClickable="false"
-                android:max="4"
-                android:progress="2"
+                android:max="400"
+                android:progress="200"
                 android:layout_alignEnd="@+id/seekBarMilk"
                 android:layout_alignStart="@+id/seekBarMilk"
                 android:thumbTint="@color/colorPrimary"
@@ -160,7 +198,7 @@
                 style="@style/Base.Widget.AppCompat.CompoundButton.CheckBox"
                 android:layout_alignStart="@+id/textViewStrength"
                 android:layout_marginStart="-8dp"
-                android:theme="@style/AppTheme.Base"
+                android:theme="@style/MyTheme"
                 android:colorControlActivated="@color/colorPrimary"
                 />
 
@@ -184,12 +222,15 @@
                 android:layout_marginTop="20dp"
                 android:enabled="true"
                 android:textColor="#FFFFFF"
-                android:background="@color/colorPrimary"
                 android:elevation="10dp"
                 android:textStyle="bold"
                 android:paddingLeft="25dp"
                 android:paddingRight="25dp"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:theme="@style/MyTheme"
+                android:backgroundTint="@color/colorPrimary" />
 
         </RelativeLayout>
 

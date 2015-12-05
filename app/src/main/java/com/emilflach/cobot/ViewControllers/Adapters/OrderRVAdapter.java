@@ -21,6 +21,7 @@ import com.emilflach.cobot.Models.ApiMessage;
 import com.emilflach.cobot.Models.Order;
 import com.emilflach.cobot.Models.Product;
 import com.emilflach.cobot.R;
+import com.emilflach.cobot.ViewControllers.Fragments.OrdersFragment;
 import com.emilflach.cobot.api.ErrorUtils;
 import com.emilflach.cobot.api.ServiceGenerator;
 
@@ -35,59 +36,17 @@ import retrofit.Retrofit;
 public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     ServiceGenerator.UserClient userClient;
-
-    public static class StatusViewHolder extends RecyclerView.ViewHolder {
-
-        TextView status;
-        TextView location;
-        TextView time;
-
-        StatusViewHolder(View view) {
-            super(view);
-            status = (TextView) view.findViewById(R.id.statusText);
-            time = (TextView) view.findViewById(R.id.timeText);
-            location = (TextView) view.findViewById(R.id.locationText);
-        }
-
-    }
-
-    public static class COVHolder extends RecyclerView.ViewHolder {
-
-        CardView cv;
-        TextView coffeeName;
-        TextView coffeeStrength;
-        TextView coffeeMilk;
-        TextView coffeeSugar;
-        TextView coffeeMug;
-        ImageView coffeePhoto;
-        RelativeLayout coffeeWrap;
-        ImageButton deleteButton;
-        int productid = 0;
-
-        COVHolder(View itemView) {
-            super(itemView);
-            cv = (CardView)itemView.findViewById(R.id.cv);
-            coffeeName = (TextView)itemView.findViewById(R.id.coffee_name);
-            coffeePhoto = (ImageView)itemView.findViewById(R.id.coffee_photo);
-            coffeeWrap = (RelativeLayout)itemView.findViewById(R.id.coffee_wrap);
-            coffeeStrength = (TextView)itemView.findViewById(R.id.textViewStrength);
-            coffeeMilk = (TextView)itemView.findViewById(R.id.textViewMilk);
-            coffeeSugar = (TextView)itemView.findViewById(R.id.textViewSugar);
-            coffeeMug = (TextView)itemView.findViewById(R.id.textViewMug);
-            deleteButton = (ImageButton) itemView.findViewById(R.id.deleteButton);
-
-        }
-    }
-
     List<Product> coffees;
     Order order;
     CobotMain cobotMain;
+    OrdersFragment ordersFragment;
     boolean isEmpty;
 
-    public OrderRVAdapter(List<Product> coffees, Order order, CobotMain cobotMain, boolean isEmpty){
+    public OrderRVAdapter(List<Product> coffees, Order order, CobotMain cobotMain, OrdersFragment ordersFragment, boolean isEmpty){
         this.coffees = coffees;
         this.order = order;
         this.cobotMain = cobotMain;
+        this.ordersFragment = ordersFragment;
         this.isEmpty = isEmpty;
     }
 
@@ -162,14 +121,16 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      * @param h the coffeeviewholder of the product that has to be deleted
      */
     public void deleteProduct(COVHolder h) {
+
         Call<ApiMessage> call = userClient.deleteOrderProduct(CobotMain.currentOrderId, h.productid);
         call.enqueue(new Callback<ApiMessage>() {
             @Override
             public void onResponse(Response<ApiMessage> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    cobotMain.setAdapter(2);
+                    ordersFragment.setOrder();
                     Log.d("Message", response.body().message());
                 } else {
+                    ordersFragment.setOrder();
                     ApiError error = ErrorUtils.parseError(response, retrofit);
                     Log.d("error message", error.message());
                 }
@@ -182,14 +143,46 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         });
     }
 
-    public void clearData() {
-        int size = this.coffees.size() + 1;
-        if (size > 0) {
-            for (int i = 0; i < size; i++) {
-                this.coffees.remove(0);
-            }
+    public static class StatusViewHolder extends RecyclerView.ViewHolder {
 
-            this.notifyItemRangeRemoved(0, size);
+        TextView status;
+        TextView location;
+        TextView time;
+
+        StatusViewHolder(View view) {
+            super(view);
+            status = (TextView) view.findViewById(R.id.statusText);
+            time = (TextView) view.findViewById(R.id.timeText);
+            location = (TextView) view.findViewById(R.id.locationText);
+        }
+
+    }
+
+    public static class COVHolder extends RecyclerView.ViewHolder {
+
+        CardView cv;
+        TextView coffeeName;
+        TextView coffeeStrength;
+        TextView coffeeMilk;
+        TextView coffeeSugar;
+        TextView coffeeMug;
+        ImageView coffeePhoto;
+        RelativeLayout coffeeWrap;
+        ImageButton deleteButton;
+        int productid = 0;
+
+        COVHolder(View itemView) {
+            super(itemView);
+            cv = (CardView)itemView.findViewById(R.id.cv);
+            coffeeName = (TextView)itemView.findViewById(R.id.coffee_name);
+            coffeePhoto = (ImageView)itemView.findViewById(R.id.coffee_photo);
+            coffeeWrap = (RelativeLayout)itemView.findViewById(R.id.coffee_wrap);
+            coffeeStrength = (TextView)itemView.findViewById(R.id.textViewStrength);
+            coffeeMilk = (TextView)itemView.findViewById(R.id.textViewMilk);
+            coffeeSugar = (TextView)itemView.findViewById(R.id.textViewSugar);
+            coffeeMug = (TextView)itemView.findViewById(R.id.textViewMug);
+            deleteButton = (ImageButton) itemView.findViewById(R.id.deleteButton);
+
         }
     }
 }

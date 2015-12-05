@@ -113,6 +113,7 @@ public class SettingsRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         editor.putString("email", null);
         editor.putString("password", null);
         editor.apply();
+        CobotMain.currentOrderId = 0;
         cobotMain.setAdapter(0);
     }
 

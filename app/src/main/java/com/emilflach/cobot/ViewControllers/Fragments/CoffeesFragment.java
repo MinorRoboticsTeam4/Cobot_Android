@@ -52,9 +52,7 @@ public class CoffeesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
-        View v = inflater.inflate(R.layout.coffees_fragment, container, false);
-
-        return v;
+        return inflater.inflate(R.layout.coffees_fragment, container, false);
     }
 
     @Override
@@ -68,6 +66,7 @@ public class CoffeesFragment extends Fragment {
             LinearLayoutManager llm = new LinearLayoutManager(getActivity());
             rv.setLayoutManager(llm);
             rv.setHasFixedSize(true);
+            rv.setItemViewCacheSize(20);
 
             List<Product> products = new ArrayList<>();
 
@@ -78,15 +77,6 @@ public class CoffeesFragment extends Fragment {
             initializeData();
         }
     }
-
-//    @Override
-//    public void onClick(View v) {
-//        switch (v.getId()) {
-//            case R.id.logoutButton:
-//                logout();
-//                break;
-//        }
-//    }
 
 
     /**

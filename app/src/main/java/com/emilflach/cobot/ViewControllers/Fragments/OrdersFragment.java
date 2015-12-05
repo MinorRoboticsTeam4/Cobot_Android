@@ -35,6 +35,7 @@ public class OrdersFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     ServiceGenerator.UserClient userClient;
     private SwipeRefreshLayout swipeContainer;
+    private OrdersFragment ordersFragment = this;
 
 
     public OrdersFragment() {
@@ -45,6 +46,7 @@ public class OrdersFragment extends Fragment {
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
+        CobotMain.ordersFragment = fragment;
         return fragment;
     }
 
@@ -55,20 +57,13 @@ public class OrdersFragment extends Fragment {
         userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
 
         swipeContainer = (SwipeRefreshLayout) v.findViewById(R.id.swipeContainer);
-        // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                CobotMain cm = (CobotMain) getActivity();
-                cm.setAdapter(2);
+                setOrder();
             }
         });
-        // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
+        swipeContainer.setColorSchemeResources(R.color.colorPrimary);
 
         return v;
     }
@@ -84,24 +79,27 @@ public class OrdersFragment extends Fragment {
             LinearLayoutManager llm = new LinearLayoutManager(getActivity());
             rv.setLayoutManager(llm);
             rv.setHasFixedSize(true);
+            rv.setItemViewCacheSize(20);
 
-            List<Product> products = new ArrayList<>();
-            Order order = new Order();
-
-            CobotMain cobotMain = (CobotMain) getActivity();
-            OrderRVAdapter adapter = new OrderRVAdapter(products, order, cobotMain, true);
-            rv.setAdapter(adapter);
-
-            setOrders(view);
+            setEmptyAdapter();
+            setOrder();
         }
+    }
+
+    public void setEmptyAdapter() {
+        List<Product> products = new ArrayList<>();
+        Order order = new Order();
+        CobotMain cobotMain = (CobotMain) getActivity();
+        OrderRVAdapter adapter = new OrderRVAdapter(products, order, cobotMain, ordersFragment, true);
+        rv.setAdapter(adapter);
     }
 
 
     /**
      * Loads the order related to a user and displays it
-     * @param view the view to which the order should be set
      */
-    private void setOrders(View view) {
+    public void setOrder() {
+        swipeContainer.setRefreshing(true);
         Call<List<Order>> call = userClient.orders(CobotMain.id);
         call.enqueue(new Callback<List<Order>>() {
 
@@ -113,6 +111,9 @@ public class OrdersFragment extends Fragment {
                         setOrderProducts(order.getId(), order);
                     }
                 } else {
+                    CobotMain.currentOrderId = 0;
+                    setEmptyAdapter();
+                    swipeContainer.setRefreshing(false);
                     ApiError error = ErrorUtils.parseError(response, retrofit);
                     Log.d("error message", error.message());
                 }
@@ -121,6 +122,7 @@ public class OrdersFragment extends Fragment {
             @Override
             public void onFailure(Throwable t) {
                 Log.d("Error", t.getMessage());
+                swipeContainer.setRefreshing(false);
             }
         });
 
@@ -142,9 +144,12 @@ public class OrdersFragment extends Fragment {
                         this.products.add(product);
                     }
                     CobotMain cobotMain = (CobotMain) getActivity();
-                    OrderRVAdapter adapter = new OrderRVAdapter(products, order, cobotMain, false);
+                    OrderRVAdapter adapter = new OrderRVAdapter(products, order, cobotMain, ordersFragment, false);
                     rv.setAdapter(adapter);
+                    swipeContainer.setRefreshing(false);
+
                 } else {
+                    swipeContainer.setRefreshing(false);
                     ApiError error = ErrorUtils.parseError(response, retrofit);
                     Log.d("error message", error.message());
                 }
@@ -153,6 +158,7 @@ public class OrdersFragment extends Fragment {
             @Override
             public void onFailure(Throwable t) {
                 Log.d("Error", t.getMessage());
+                swipeContainer.setRefreshing(false);
             }
         });
 

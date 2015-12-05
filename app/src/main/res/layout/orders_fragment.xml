@@ -3,99 +3,26 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Orders"
-        android:id="@+id/textViewOrders"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
-        android:textColor="#FFF"
-        android:layout_centerHorizontal="true"
-        android:textAlignment="center"
-        android:gravity="top|center" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:id="@+id/statusGroup"
-        android:layout_marginTop="50dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Currently Driving"
-            android:id="@+id/textViewStatus"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
-            android:textSize="30dp"
-            android:textColor="#FFF" />
-
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:id="@+id/imageView"
-            android:src="@android:drawable/ic_menu_recent_history"
-            android:layout_below="@+id/textViewStatus"
-            android:layout_alignLeft="@+id/textViewStatus"
-            android:layout_alignStart="@+id/textViewStatus"
-            android:layout_marginTop="30dp"
-            android:layout_marginLeft="-10dp" />
-
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:id="@+id/imageView2"
-            android:src="@android:drawable/ic_menu_mylocation"
-            android:layout_alignTop="@+id/imageView"
-            android:layout_alignRight="@+id/textViewStatus"
-            android:layout_alignEnd="@+id/textViewStatus"
-            android:layout_marginRight="-10dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="10 min"
-            android:id="@+id/textViewTime"
-            android:layout_below="@+id/imageView"
-            android:layout_alignLeft="@+id/imageView"
-            android:layout_alignStart="@+id/imageView"
-            android:layout_marginLeft="-7dp"
-            android:layout_marginTop="5dp"
-            android:textColor="#FFF" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Room 12.15"
-            android:id="@+id/textViewLocation"
-            android:layout_alignTop="@+id/textViewTime"
-            android:layout_alignLeft="@+id/imageView2"
-            android:layout_alignStart="@+id/imageView2"
-            android:layout_marginLeft="-28dp"
-            android:textColor="#FFF" />
-    </RelativeLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:layout_below="@+id/statusGroup"
-        android:layout_marginTop="10dp">
+        android:paddingEnd="8dp">
 
-        <android.support.v7.widget.RecyclerView
-            android:layout_height="match_parent"
+        <android.support.v4.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swipeContainer"
             android:layout_width="match_parent"
-            android:id="@+id/rv">
+            android:layout_height="match_parent">
 
-        </android.support.v7.widget.RecyclerView>
+            <android.support.v7.widget.RecyclerView
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:id="@+id/rv">
+
+            </android.support.v7.widget.RecyclerView>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
 
     </LinearLayout>
 

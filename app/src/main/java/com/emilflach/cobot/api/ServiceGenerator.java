@@ -1,9 +1,13 @@
-package com.emilflach.cobot;
+package com.emilflach.cobot.api;
 
 
 import android.util.Base64;
-import android.util.Log;
 
+import com.emilflach.cobot.CobotMain;
+import com.emilflach.cobot.Models.ApiMessage;
+import com.emilflach.cobot.Models.Order;
+import com.emilflach.cobot.Models.Product;
+import com.emilflach.cobot.Models.User;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -28,8 +32,8 @@ public class ServiceGenerator {
                     .addConverterFactory(GsonConverterFactory.create());
 
     public static <S> S createService(Class<S> serviceClass) {
-        String username = MainActivity.email;
-        String password = MainActivity.password;
+        String username = CobotMain.email;
+        String password = CobotMain.password;
         if (username != null && password != null) {
             String credentials = username + ":" + password;
             final String basic = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
@@ -85,7 +89,7 @@ public class ServiceGenerator {
                 @Field("name") String name,
                 @Field("email") String email,
                 @Field("password") String password,
-                @Field("location") String location
+                @Field("location") int location
         );
 
         @POST("/users/{id}/orders")
@@ -99,7 +103,25 @@ public class ServiceGenerator {
                 @Path("id") int id,
                 @Field("name") String name,
                 @Field("type") int type,
-                @Field("image_path") int image_path,
+                @Field("option_strength") int strength,
+                @Field("option_milk") int milk,
+                @Field("option_sugar") int sugar,
+                @Field("option_mug") int mug
+        );
+
+        @DELETE("orders/{orderid}/products/{productid}")
+        Call<ApiMessage> deleteOrderProduct(
+                @Path("orderid") int orderid,
+                @Path("productid") int productid
+        );
+
+        @FormUrlEncoded
+        @PUT("/users/{userid}/products/{productid}")
+        Call<Product> updateProduct(
+                @Path("userid") int userid,
+                @Path("productid") int productid,
+                @Field("name") String name,
+                @Field("type") int type,
                 @Field("option_strength") int strength,
                 @Field("option_milk") int milk,
                 @Field("option_sugar") int sugar,

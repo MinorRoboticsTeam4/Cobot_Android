@@ -1,4 +1,4 @@
-package com.emilflach.cobot;
+package com.emilflach.cobot.ViewControllers.Fragments;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -10,8 +10,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
+
+import com.emilflach.cobot.CobotMain;
+import com.emilflach.cobot.Models.ApiError;
+import com.emilflach.cobot.Models.Product;
+import com.emilflach.cobot.R;
+import com.emilflach.cobot.ViewControllers.Adapters.CoffeeRVAdapter;
+import com.emilflach.cobot.api.ErrorUtils;
+import com.emilflach.cobot.api.ServiceGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +28,12 @@ import retrofit.Response;
 import retrofit.Retrofit;
 
 /**
- * Created by Emil on 2015-11-07.
+ * cobot
+ * by Emil on 2015-11-07.
  */
-public class CoffeesFragment extends Fragment implements View.OnClickListener{
+public class CoffeesFragment extends Fragment {
 
-
+    ServiceGenerator.UserClient userClient;
     private RecyclerView rv;
     private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -44,13 +51,8 @@ public class CoffeesFragment extends Fragment implements View.OnClickListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.coffees_fragment, container, false);
-
-        //Add click listener to logout button
-        ImageButton l = (ImageButton) v.findViewById(R.id.logoutButton);
-        l.setOnClickListener(this);
-
-        return v;
+        userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
+        return inflater.inflate(R.layout.coffees_fragment, container, false);
     }
 
     @Override
@@ -58,28 +60,21 @@ public class CoffeesFragment extends Fragment implements View.OnClickListener{
         super.onActivityCreated(savedInstanceState);
 
         //Set an empty adapter on initialization after which data gets retrieved
-        rv = (RecyclerView) getView().findViewById(R.id.rv);
-        if (rv != null) {
+        View v = getView();
+        if (v != null) {
+            rv = (RecyclerView) v.findViewById(R.id.rv);
             LinearLayoutManager llm = new LinearLayoutManager(getActivity());
             rv.setLayoutManager(llm);
             rv.setHasFixedSize(true);
+            rv.setItemViewCacheSize(20);
 
             List<Product> products = new ArrayList<>();
 
-            MainActivity mainActivity = (MainActivity) getActivity();
-            RVAdapter adapter = new RVAdapter(products, mainActivity);
+            CobotMain cobotMain = (CobotMain) getActivity();
+            CoffeeRVAdapter adapter = new CoffeeRVAdapter(products, cobotMain);
             rv.setAdapter(adapter);
 
             initializeData();
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.logoutButton:
-                logout();
-                break;
         }
     }
 
@@ -88,8 +83,7 @@ public class CoffeesFragment extends Fragment implements View.OnClickListener{
      * Gets the products attached to user and sets the adapter with this data
      */
     private void initializeData() {
-        ServiceGenerator.UserClient userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
-        Call<List<Product>> call = userClient.products(MainActivity.id);
+        Call<List<Product>> call = userClient.products(CobotMain.id);
         call.enqueue(new Callback<List<Product>>() {
 
             private List<Product> products = new ArrayList<>();
@@ -100,8 +94,8 @@ public class CoffeesFragment extends Fragment implements View.OnClickListener{
                     for (Product product : response.body()) {
                         this.products.add(product);
                     }
-                    MainActivity mainActivity = (MainActivity) getActivity();
-                    RVAdapter adapter = new RVAdapter(products, mainActivity);
+                    CobotMain cobotMain = (CobotMain) getActivity();
+                    CoffeeRVAdapter adapter = new CoffeeRVAdapter(products, cobotMain);
                     rv.setAdapter(adapter);
                 } else {
                     ApiError error = ErrorUtils.parseError(response, retrofit);
@@ -117,20 +111,6 @@ public class CoffeesFragment extends Fragment implements View.OnClickListener{
     }
 
 
-    /**
-     * Logs out user by removing credentials from sharedpreferences
-     */
-    public void logout() {
-        //TODO: Move this away from sharedpreferences
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("id", 0);
-        editor.putString("email", null);
-        editor.putString("password", null);
-        editor.apply();
 
-        MainActivity main = (MainActivity) getActivity();
-        main.setAdapter();
-    }
 
 }

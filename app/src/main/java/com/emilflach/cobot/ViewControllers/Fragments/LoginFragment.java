@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.emilflach.cobot.CobotMain;
 import com.emilflach.cobot.Models.ApiError;
@@ -35,6 +36,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
     private EditText loginEmail;
     private EditText loginPassword;
+    private Toast toast;
 
     public LoginFragment() {
     }
@@ -62,6 +64,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
         loginEmail = (EditText) v.findViewById(R.id.editTextLoginEmail);
         loginPassword = (EditText) v.findViewById(R.id.editTextLoginPassword);
+
+        toast = Toast.makeText(getActivity(), "Notification", Toast.LENGTH_SHORT);
 
         return v;
     }
@@ -123,6 +127,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                     }
                     ApiError error = ErrorUtils.parseError(response, retrofit);
                     Log.d("error message", error.message());
+                    toast.setText(error.message());
+                    toast.show();
 
                     for (String message : error.validation_messages()) {
                         Log.d("validation message", message);
@@ -134,6 +140,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
             @Override
             public void onFailure(Throwable t) {
                 Log.d("Error", t.getMessage());
+                toast.setText("Something went wrong");
+                toast.show();
             }
         });
 
@@ -161,6 +169,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                 } else {
                     ApiError error = ErrorUtils.parseError(response, retrofit);
                     Log.d("error message", error.message());
+                    toast.setText(error.message());
+                    toast.show();
                     System.out.println("Failed");
                 }
             }
@@ -168,6 +178,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
             @Override
             public void onFailure(Throwable t) {
                 Log.d("Error", t.getMessage());
+                toast.setText("Something went wrong");
+                toast.show();
             }
         });
 

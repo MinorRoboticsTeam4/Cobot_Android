@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.emilflach.cobot.CobotMain;
 import com.emilflach.cobot.Models.ApiError;
@@ -43,6 +44,7 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
     ServiceGenerator.UserClient userClient;
     List<Product> coffees;
     CobotMain cobotMain;
+    Toast toast;
 
     public CoffeeRVAdapter(List<Product> coffees, CobotMain cobotMain){
         this.coffees = coffees;
@@ -63,6 +65,7 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
     public CoffeeViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.coffee_item, viewGroup, false);
         userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
+        toast = Toast.makeText(cobotMain.getApplicationContext(), "Notification", Toast.LENGTH_SHORT);
         return new CoffeeViewHolder(v);
     }
 
@@ -90,12 +93,6 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
                 updateProduct(holder);
             }
         });
-
-        if (CobotMain.currentOrderId == 0) {
-            holder.orderButton.setText("Order");
-        } else {
-            holder.orderButton.setText("Add to order");
-        }
 
         holder.orderButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -265,21 +262,25 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
             public void onResponse(Response<Order> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     System.out.println("Order add success");
-                    holder.orderButton.setText("Add to order");
                     addToOrder(holder, response.body().getId());
                 } else {
                     if(response.message().equalsIgnoreCase("FORBIDDEN")) {
                         addToOrder(holder, CobotMain.currentOrderId);
+                    } else {
+                        toast.setText("Something went wrong!");
+                        toast.show();
+                        ApiError error = ErrorUtils.parseError(response, retrofit);
+                        Log.d("Order error message", error.message());
                     }
-                    ApiError error = ErrorUtils.parseError(response, retrofit);
-                    Log.d("error message", error.message());
-                    System.out.println("Failed");
+
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 Log.d("Error", t.getMessage());
+                toast.setText("Something went wrong!");
+                toast.show();
             }
         });
     }
@@ -312,21 +313,25 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
                 if (response.isSuccess()) {
                     System.out.println("Product add success");
                     CobotMain.ordersFragment.setOrder();
-                    //TODO: User notification
+                    toast.setText("Ordered!");
+                    toast.show();
                 } else {
                     if( response.message().equalsIgnoreCase("Not Found")) {
                         order(holder);
+                    } else {
+                        ApiError error = ErrorUtils.parseError(response, retrofit);
+                        Log.d("error message", error.message());
+                        toast.setText(error.message());
+                        toast.show();
                     }
-                    ApiError error = ErrorUtils.parseError(response, retrofit);
-                    Log.d("error message", error.message());
-                    //TODO: User notification
-                    System.out.println("Failed");
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 Log.d("Error", "wow" + t.getMessage());
+                toast.setText("Something went wrong!");
+                toast.show();
             }
         });
 
@@ -356,13 +361,15 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
                 } else {
                     ApiError error = ErrorUtils.parseError(response, retrofit);
                     Log.d("error message", error.message());
-                    //TODO: User notification
-                    System.out.println("Product update failed");
+                    toast.setText(error.message());
+                    toast.show();
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
+                toast.setText("Something went wrong!");
+                toast.show();
                 Log.d("Error", "wow" + t.getMessage());
             }
         });

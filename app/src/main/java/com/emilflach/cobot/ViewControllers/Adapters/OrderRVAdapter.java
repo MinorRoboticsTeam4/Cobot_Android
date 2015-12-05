@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.emilflach.cobot.CobotMain;
 import com.emilflach.cobot.Models.ApiError;
@@ -41,6 +42,7 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     CobotMain cobotMain;
     OrdersFragment ordersFragment;
     boolean isEmpty;
+    Toast toast;
 
     public OrderRVAdapter(List<Product> coffees, Order order, CobotMain cobotMain, OrdersFragment ordersFragment, boolean isEmpty){
         this.coffees = coffees;
@@ -58,6 +60,7 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int type) {
         userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
+        toast = Toast.makeText(cobotMain.getApplicationContext(), "Notification", Toast.LENGTH_SHORT);
         if(type == 0) {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.status_item, viewGroup, false);
             return new StatusViewHolder(v);
@@ -127,18 +130,24 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             @Override
             public void onResponse(Response<ApiMessage> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
+                    toast.setText("Product removed");
+                    toast.show();
                     ordersFragment.setOrder();
                     Log.d("Message", response.body().message());
                 } else {
                     ordersFragment.setOrder();
                     ApiError error = ErrorUtils.parseError(response, retrofit);
                     Log.d("error message", error.message());
+                    toast.setText(error.message());
+                    toast.show();
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 Log.d("Error", t.getMessage());
+                toast.setText("Something went wrong!");
+                toast.show();
             }
         });
     }

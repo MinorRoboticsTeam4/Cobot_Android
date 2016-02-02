@@ -5,7 +5,9 @@ import android.util.Base64;
 
 import com.emilflach.cobot.CobotMain;
 import com.emilflach.cobot.Models.ApiMessage;
+import com.emilflach.cobot.Models.Location;
 import com.emilflach.cobot.Models.Order;
+import com.emilflach.cobot.Models.OrderCount;
 import com.emilflach.cobot.Models.Product;
 import com.emilflach.cobot.Models.User;
 import com.squareup.okhttp.Interceptor;
@@ -63,6 +65,9 @@ public class ServiceGenerator {
         @GET("/users/authenticate")
         Call<User> authenticate();
 
+        @GET("/locations")
+        Call<List<Location>> locations();
+
         @GET("/users/{id}")
         Call<User> user(
                 @Path("id") int id
@@ -83,13 +88,31 @@ public class ServiceGenerator {
                 @Path("id") int id
         );
 
+        @GET("/orders/count/{order_id}")
+        Call<OrderCount> orderCount(
+                @Path("order_id") int order_id
+        );
+
         @FormUrlEncoded
-        @POST("/users/")
+        @POST("/users")
         Call<User> createUser(
                 @Field("name") String name,
                 @Field("email") String email,
-                @Field("password") String password,
-                @Field("location") int location
+                @Field("password") String password
+        );
+
+        @FormUrlEncoded
+        @PUT("/users/{id}")
+        Call<User> setNFCProduct(
+                @Path("id") int id,
+                @Field("product_id") int product_id
+        );
+
+        @FormUrlEncoded
+        @PUT("/users/{id}")
+        Call<User> setLocation(
+                @Path("id") int id,
+                @Field("location_id") int location_id
         );
 
         @POST("/users/{id}/orders")
@@ -109,12 +132,6 @@ public class ServiceGenerator {
                 @Field("option_mug") int mug
         );
 
-        @DELETE("orders/{orderid}/products/{productid}")
-        Call<ApiMessage> deleteOrderProduct(
-                @Path("orderid") int orderid,
-                @Path("productid") int productid
-        );
-
         @FormUrlEncoded
         @PUT("/users/{userid}/products/{productid}")
         Call<Product> updateProduct(
@@ -126,6 +143,18 @@ public class ServiceGenerator {
                 @Field("option_milk") int milk,
                 @Field("option_sugar") int sugar,
                 @Field("option_mug") int mug
+        );
+
+        @DELETE("orders/{orderid}/products/{productid}")
+        Call<ApiMessage> deleteOrderProduct(
+                @Path("orderid") int orderid,
+                @Path("productid") int productid
+        );
+
+        @DELETE("users/{userid}/orders/{orderid}")
+        Call<ApiMessage> deleteOrder(
+                @Path("userid") int userid,
+                @Path("orderid") int orderid
         );
 
     }

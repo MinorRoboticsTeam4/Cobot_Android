@@ -9,10 +9,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.emilflach.cobot.CobotMain;
 import com.emilflach.cobot.Models.ApiError;
+import com.emilflach.cobot.Models.ApiMessage;
 import com.emilflach.cobot.Models.Order;
+import com.emilflach.cobot.Models.OrderCount;
 import com.emilflach.cobot.Models.Product;
 import com.emilflach.cobot.R;
 import com.emilflach.cobot.ViewControllers.Adapters.OrderRVAdapter;
@@ -30,12 +34,14 @@ import retrofit.Retrofit;
 /**
  * ${NAME}Created by Emil on 2015-11-06.
  */
-public class OrdersFragment extends Fragment {
+public class OrdersFragment extends Fragment implements View.OnClickListener {
     private RecyclerView rv;
     private static final String ARG_SECTION_NUMBER = "section_number";
     ServiceGenerator.UserClient userClient;
     private SwipeRefreshLayout swipeContainer;
     private OrdersFragment ordersFragment = this;
+    private Toast toast;
+    private Button clearButton;
 
 
     public OrdersFragment() {
@@ -64,6 +70,10 @@ public class OrdersFragment extends Fragment {
             }
         });
         swipeContainer.setColorSchemeResources(R.color.colorPrimary);
+        clearButton = (Button) v.findViewById(R.id.clearButton);
+        clearButton.setOnClickListener(this);
+
+        toast = Toast.makeText(getActivity(), "Notification", Toast.LENGTH_SHORT);
 
         return v;
     }
@@ -125,7 +135,6 @@ public class OrdersFragment extends Fragment {
                 swipeContainer.setRefreshing(false);
             }
         });
-
     }
 
     /**
@@ -133,6 +142,7 @@ public class OrdersFragment extends Fragment {
      * @param order_id the order for which products should be returned
      */
     private void setOrderProducts(int order_id, final Order order) {
+        getOrderCount(order_id);
         Call<List<Product>> call = userClient.orderProducts(order_id);
         call.enqueue(new Callback<List<Product>>() {
             private List<Product> products = new ArrayList<>();
@@ -164,4 +174,69 @@ public class OrdersFragment extends Fragment {
 
     }
 
+    /**
+     * Loads the order related to a user and displays it
+     */
+    public void getOrderCount(int order_id) {
+        System.out.print("Order count called");
+        Call<OrderCount> call = userClient.orderCount(order_id);
+        call.enqueue(new Callback<OrderCount>() {
+
+            @Override
+            public void onResponse(Response<OrderCount> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    CobotMain.orderCount = response.body().getOrderCount();
+                    Log.d("Order count", String.valueOf(response.body().getOrderCount()));
+                } else {
+                    CobotMain.orderCount = 0;
+                    ApiError error = ErrorUtils.parseError(response, retrofit);
+                    Log.d("error order count", error.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("Error", t.getMessage());
+                swipeContainer.setRefreshing(false);
+            }
+        });
+    }
+
+    public void deleteOrder() {
+        Call<ApiMessage> call = userClient.deleteOrder(CobotMain.id, CobotMain.currentOrderId);
+        call.enqueue(new Callback<ApiMessage>() {
+            @Override
+            public void onResponse(Response<ApiMessage> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    toast.setText("Order removed");
+                    toast.show();
+                    Log.d("Message", response.body().message());
+                    ordersFragment.setOrder();
+                } else {
+                    ordersFragment.setOrder();
+                    ApiError error = ErrorUtils.parseError(response, retrofit);
+                    Log.d("error message", error.message());
+                    toast.setText(error.message());
+                    toast.show();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("Error", t.getMessage());
+                toast.setText("Something went wrong!");
+                toast.show();
+            }
+        });
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.clearButton:
+                deleteOrder();
+                break;
+        }
+    }
 }

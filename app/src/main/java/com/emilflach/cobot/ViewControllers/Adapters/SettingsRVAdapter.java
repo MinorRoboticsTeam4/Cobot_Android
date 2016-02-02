@@ -6,51 +6,53 @@ package com.emilflach.cobot.ViewControllers.Adapters;
  */
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.emilflach.cobot.CobotMain;
-import com.emilflach.cobot.Models.ApiError;
-import com.emilflach.cobot.Models.ApiMessage;
-import com.emilflach.cobot.Models.Order;
-import com.emilflach.cobot.Models.Product;
+import com.emilflach.cobot.Models.Setting;
 import com.emilflach.cobot.R;
-import com.emilflach.cobot.api.ErrorUtils;
+import android.support.v4.app.Fragment;
+
+import com.emilflach.cobot.ViewControllers.Fragments.LocationsFragment;
+import com.emilflach.cobot.ViewControllers.Fragments.SettingsFragment;
 import com.emilflach.cobot.api.ServiceGenerator;
 
 import java.util.List;
 
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
-
 public class SettingsRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     ServiceGenerator.UserClient userClient;
+    CobotMain cobotMain;
+    SettingsFragment settingsFragment;
+    List<Setting> settings;
+    Toast toast;
 
-    public static class LogoutViewHolder extends RecyclerView.ViewHolder {
+    public static class SettingsViewHolder extends RecyclerView.ViewHolder {
 
         RelativeLayout itemWrap;
+        TextView item_description;
+        ImageView item_icon;
+        int settingId;
 
-        LogoutViewHolder(View view) {
+        SettingsViewHolder(View view) {
             super(view);
             itemWrap = (RelativeLayout) view.findViewById(R.id.item_wrap);
+            item_description = (TextView) view.findViewById(R.id.item_description);
+            item_icon = (ImageView) view.findViewById(R.id.item_icon);
         }
     }
 
-    CobotMain cobotMain;
-
-    public SettingsRVAdapter(CobotMain cobotMain){
+    public SettingsRVAdapter(List<Setting> settings, CobotMain cobotMain, SettingsFragment settingsFragment){
         this.cobotMain = cobotMain;
+        this.settings = settings;
+        this.settingsFragment = settingsFragment;
     }
 
     @Override
@@ -61,46 +63,32 @@ public class SettingsRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int type) {
         userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
-        switch (type) {
-            case 0:
-                View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.logout_item, viewGroup, false);
-                return new LogoutViewHolder(v);
-            default:
-                return null;
-        }
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.settings_item, viewGroup, false);
+        toast = Toast.makeText(cobotMain.getApplicationContext(), "Notification", Toast.LENGTH_SHORT);
+        return new SettingsViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int i) {
-        switch (i) {
-            case 0:
-                LogoutViewHolder h = (LogoutViewHolder) holder;
-                h.itemWrap.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        logout();
-                    }
-                });
-            default:
-        }
-
+        final SettingsViewHolder h = (SettingsViewHolder) holder;
+        h.item_description.setText(settings.get(i).getName());
+        h.settingId = settings.get(i).getId();
+        h.itemWrap.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (h.settingId == 1) {
+                    settingsFragment.openLocation();
+                }
+                if (h.settingId == 2) {
+                    settingsFragment.openInformation();
+                }
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return 1;
+        return settings.size();
     }
-
-
-    /**
-     * Returns type as position
-     * @param position position of the adapter
-     * @return returns the type of adapter
-     */
-    @Override
-    public int getItemViewType(int position) {
-        return position;
-    }
-
 
     /**
      * Logs out user by removing credentials from sharedpreferences
@@ -116,6 +104,20 @@ public class SettingsRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         CobotMain.currentOrderId = 0;
         cobotMain.setAdapter(0);
     }
+
+//    public static int settingIcon(int i) {
+//        switch (i) {
+//            case 0: //nfc icon
+//                return R.drawable.coffee_black;
+//            case 1: //Map icon
+//                return R.drawable.ic_dialog_map;
+//            case 2: //i icon
+//                return R.drawable.ic_dialog_info;
+//
+//            default:
+//                return R.drawable.black;
+//        }
+//    }
 
 }
 

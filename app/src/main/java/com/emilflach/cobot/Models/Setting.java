@@ -1,0 +1,31 @@
+package com.emilflach.cobot.Models;
+
+/**
+ * cobot
+ * by Emil on 2015-11-23.
+ */
+public class Setting {
+    private int id;
+    private String name;
+
+    public Setting(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+}

@@ -61,7 +61,7 @@
                 android:layout_height="40dp"
                 android:id="@+id/imageView3"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/clock"
+                android:src="@drawable/queue"
                 android:layout_marginBottom="10dp"
                 android:tint="@color/colorPrimary" />
 
@@ -69,10 +69,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="No time"
+                android:text="No queue"
                 android:id="@+id/timeText"
+                android:layout_below="@+id/imageView3"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@+id/imageView3" />
+                android:paddingRight="7dp" />
         </RelativeLayout>
 
         <RelativeLayout

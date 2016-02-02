@@ -13,8 +13,9 @@ public class Product {
     private int milk;
     private int sugar;
     private boolean mug;
+    private boolean isNFC;
 
-    Product(int id, String name, String image, int type, int strength, int milk, int sugar, boolean mug) {
+    Product(int id, String name, String image, int type, int strength, int milk, int sugar, boolean mug, boolean isNFC) {
         this.id = id;
         this.name = name;
         this.image = image;
@@ -23,7 +24,7 @@ public class Product {
         this.milk = milk;
         this.sugar = sugar;
         this.mug = mug;
-
+        this.isNFC = isNFC;
     }
 
     public int getId() {
@@ -88,5 +89,13 @@ public class Product {
 
     public void setMug(boolean mug) {
         this.mug = mug;
+    }
+
+    public boolean isNFC() {
+        return isNFC;
+    }
+
+    public void setIsNFC(boolean isNFC) {
+        this.isNFC = isNFC;
     }
 }

@@ -26,4 +26,19 @@
 
     </LinearLayout>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clear order"
+        android:id="@+id/clearButton"
+        android:layout_gravity="bottom"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
+        android:textColor="#FFFFFF"
+        android:theme="@style/MyTheme"
+        android:backgroundTint="@color/colorPrimary"
+        android:padding="10dp" />
+
 </RelativeLayout>

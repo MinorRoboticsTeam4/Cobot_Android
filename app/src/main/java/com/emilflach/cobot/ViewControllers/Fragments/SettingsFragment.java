@@ -1,32 +1,23 @@
 package com.emilflach.cobot.ViewControllers.Fragments;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
+
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.emilflach.cobot.CobotMain;
-import com.emilflach.cobot.Models.ApiError;
-import com.emilflach.cobot.Models.Product;
+import com.emilflach.cobot.Models.Setting;
 import com.emilflach.cobot.R;
-import com.emilflach.cobot.ViewControllers.Adapters.CoffeeRVAdapter;
 import com.emilflach.cobot.ViewControllers.Adapters.SettingsRVAdapter;
-import com.emilflach.cobot.api.ErrorUtils;
 import com.emilflach.cobot.api.ServiceGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
 
 /**
  * cobot
@@ -68,11 +59,42 @@ public class SettingsFragment extends Fragment {
             rv.setLayoutManager(llm);
             rv.setHasFixedSize(true);
 
+            List<Setting> settings = getSettings();
             CobotMain cobotMain = (CobotMain) getActivity();
-            SettingsRVAdapter adapter = new SettingsRVAdapter(cobotMain);
+            SettingsRVAdapter adapter = new SettingsRVAdapter(settings, cobotMain, this);
             rv.setAdapter(adapter);
-
         }
+    }
+
+    /**
+     * Gets all the locations and sets the adapter with this data
+     */
+    private List<Setting> getSettings() {
+        List<Setting> settings = new ArrayList<>();
+        settings.add(new Setting(0, "Set nfc mug"));
+        settings.add(new Setting(1, "Set location"));
+        settings.add(new Setting(2, "Cobot information"));
+        return settings;
+    }
+
+    /**
+     * Opens the location fragment
+     */
+    public void openLocation() {
+        this.getFragmentManager().beginTransaction()
+                .replace(R.id.cl, new LocationsFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    /**
+     * Opens the location fragment
+     */
+    public void openInformation() {
+        this.getFragmentManager().beginTransaction()
+                .replace(R.id.cl, new InformationFragment())
+                .addToBackStack(null)
+                .commit();
     }
 
 

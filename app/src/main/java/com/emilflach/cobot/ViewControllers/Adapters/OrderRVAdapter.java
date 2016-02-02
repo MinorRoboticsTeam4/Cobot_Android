@@ -20,13 +20,13 @@ import com.emilflach.cobot.CobotMain;
 import com.emilflach.cobot.Models.ApiError;
 import com.emilflach.cobot.Models.ApiMessage;
 import com.emilflach.cobot.Models.Order;
+import com.emilflach.cobot.Models.OrderCount;
 import com.emilflach.cobot.Models.Product;
 import com.emilflach.cobot.R;
 import com.emilflach.cobot.ViewControllers.Fragments.OrdersFragment;
 import com.emilflach.cobot.api.ErrorUtils;
 import com.emilflach.cobot.api.ServiceGenerator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Call;
@@ -77,11 +77,11 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if(isEmpty) {
                 h.location.setText(String.valueOf("No location set"));
                 h.status.setText(String.valueOf(CobotMain.statusMessage(-1)));
-                h.time.setText(String.valueOf("No estimated time"));
+                h.time.setText(String.valueOf("No current queue"));
             } else {
-                h.location.setText(String.valueOf(order.getLocation()));
+                h.location.setText(order.getLocation());
                 h.status.setText(String.valueOf(CobotMain.statusMessage(order.getDelivery_status())));
-                h.time.setText(String.valueOf(order.getDelivered_at()));
+                h.time.setText(String.valueOf(CobotMain.orderCount));
             }
         } else {
             i = i - 1;
@@ -102,6 +102,8 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     }
 
+
+    // + 1 for the status item as it is not in the coffees list
     @Override
     public int getItemCount() {
         return coffees.size() + 1;
@@ -120,10 +122,15 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
     /**
-     * Deletes selected product and resets the adapter to refresh data
+     * Removes selected product from interface,
+     * Then sends delete request to server
+     * On success notify user, on failure undo the removal from interface
      * @param h the coffeeviewholder of the product that has to be deleted
      */
     public void deleteProduct(COVHolder h) {
+        Log.d("adapter position", String.valueOf(h.getAdapterPosition()));
+        coffees.remove(h.getAdapterPosition() - 1);
+        notifyItemRemoved(h.getAdapterPosition());
 
         Call<ApiMessage> call = userClient.deleteOrderProduct(CobotMain.currentOrderId, h.productid);
         call.enqueue(new Callback<ApiMessage>() {
@@ -132,8 +139,11 @@ public class OrderRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (response.isSuccess()) {
                     toast.setText("Product removed");
                     toast.show();
-                    ordersFragment.setOrder();
                     Log.d("Message", response.body().message());
+
+                    if(coffees.size() == 0) {
+                        ordersFragment.setOrder();
+                    }
                 } else {
                     ordersFragment.setOrder();
                     ApiError error = ErrorUtils.parseError(response, retrofit);

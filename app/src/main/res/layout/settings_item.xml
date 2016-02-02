@@ -11,36 +11,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/item_wrap"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:background="#00000000">
+        android:background="?android:attr/selectableItemBackground">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:id="@+id/item_icon"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginEnd="15dp"
             android:layout_marginStart="15dp"
-            android:src="@android:drawable/ic_lock_idle_lock"
+            android:src="@android:drawable/ic_dialog_info"
             android:tint="@color/colorPrimary" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/item_description"
-            android:textSize="30sp"
-            android:text="Log out"
-            android:layout_toRightOf="@+id/item_icon"
-            android:layout_toEndOf="@+id/item_icon"
+            android:textSize="20dp"
+            android:text="Setting"
             android:textColor="#656565"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="0dp"
+            android:layout_alignParentTop="false"
             android:layout_toStartOf="@+id/item_arrow"
-            android:layout_marginEnd="15dp" />
+            android:layout_marginEnd="15dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="false"
+            android:layout_toRightOf="@+id/item_icon" />
 
         <ImageButton
             android:layout_width="25dp"
@@ -54,9 +54,9 @@
             android:tint="#505050"
             android:rotation="90"
             android:contentDescription="Nice arrow"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp" />
+            android:layout_alignParentTop="false"
+            android:layout_marginEnd="10dp"
+            android:layout_centerVertical="true" />
 
     </RelativeLayout>
 

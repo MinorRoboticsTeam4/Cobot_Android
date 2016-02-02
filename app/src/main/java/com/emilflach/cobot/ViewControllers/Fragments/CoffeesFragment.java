@@ -1,7 +1,5 @@
 package com.emilflach.cobot.ViewControllers.Fragments;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,8 +32,9 @@ import retrofit.Retrofit;
 public class CoffeesFragment extends Fragment {
 
     ServiceGenerator.UserClient userClient;
-    private RecyclerView rv;
+    public RecyclerView rv;
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private CoffeesFragment coffeesFragment = this;
 
     public CoffeesFragment() {
     }
@@ -71,7 +70,7 @@ public class CoffeesFragment extends Fragment {
             List<Product> products = new ArrayList<>();
 
             CobotMain cobotMain = (CobotMain) getActivity();
-            CoffeeRVAdapter adapter = new CoffeeRVAdapter(products, cobotMain);
+            CoffeeRVAdapter adapter = new CoffeeRVAdapter(products, cobotMain, coffeesFragment);
             rv.setAdapter(adapter);
 
             initializeData();
@@ -82,7 +81,7 @@ public class CoffeesFragment extends Fragment {
     /**
      * Gets the products attached to user and sets the adapter with this data
      */
-    private void initializeData() {
+    public void initializeData() {
         Call<List<Product>> call = userClient.products(CobotMain.id);
         call.enqueue(new Callback<List<Product>>() {
 
@@ -95,7 +94,7 @@ public class CoffeesFragment extends Fragment {
                         this.products.add(product);
                     }
                     CobotMain cobotMain = (CobotMain) getActivity();
-                    CoffeeRVAdapter adapter = new CoffeeRVAdapter(products, cobotMain);
+                    CoffeeRVAdapter adapter = new CoffeeRVAdapter(products, cobotMain, coffeesFragment);
                     rv.setAdapter(adapter);
                 } else {
                     ApiError error = ErrorUtils.parseError(response, retrofit);

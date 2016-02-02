@@ -3,12 +3,20 @@ package com.emilflach.cobot.ViewControllers.Adapters;
 
 
 import android.animation.ObjectAnimator;
+import android.annotation.TargetApi;
+import android.content.SharedPreferences;
+import android.graphics.Interpolator;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
+import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.RotateAnimation;
@@ -18,6 +26,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -27,11 +36,14 @@ import com.emilflach.cobot.CobotMain;
 import com.emilflach.cobot.Models.ApiError;
 import com.emilflach.cobot.Models.Order;
 import com.emilflach.cobot.Models.Product;
+import com.emilflach.cobot.Models.User;
 import com.emilflach.cobot.R;
-import com.emilflach.cobot.ViewControllers.Fragments.OrdersFragment;
+import com.emilflach.cobot.ViewControllers.Fragments.CoffeesFragment;
+import com.emilflach.cobot.ViewControllers.Fragments.LoginFragment;
 import com.emilflach.cobot.api.ErrorUtils;
 import com.emilflach.cobot.api.ServiceGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.Call;
@@ -44,16 +56,21 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
     ServiceGenerator.UserClient userClient;
     List<Product> coffees;
     CobotMain cobotMain;
+    CoffeesFragment coffeesFragment;
     Toast toast;
 
-    public CoffeeRVAdapter(List<Product> coffees, CobotMain cobotMain){
+    public CoffeeRVAdapter(List<Product> coffees, CobotMain cobotMain, CoffeesFragment coffeesFragment){
         this.coffees = coffees;
         this.cobotMain = cobotMain;
+        this.coffeesFragment = coffeesFragment;
     }
 
     @Override
     public void onViewAttachedToWindow(CoffeeViewHolder holder) {
         super.onViewAttachedToWindow(holder);
+        if(holder.productId != CobotMain.nfc_product_id) {
+            holder.nfcButton.setChecked(false);
+        }
     }
 
     @Override
@@ -82,7 +99,15 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
         holder.coffeeSugar.setProgress(coffees.get(i).getSugar() * CobotMain.milkScale);
         holder.sugarValue.setText(String.valueOf(coffees.get(i).getSugar()));
         holder.coffeeMug.setChecked(coffees.get(i).isMug());
-//        holder.coffeeLocation.setText(String.valueOf(coffees.get(i).location));
+        holder.coffeeLocation.setText(CobotMain.location_name);
+
+        if(holder.productId == CobotMain.nfc_product_id) {
+            holder.nfcButton.setChecked(true);
+            coffees.get(i).setIsNFC(true);
+        } else {
+            holder.nfcButton.setChecked(false);
+            coffees.get(i).setIsNFC(false);
+        }
 
         holder.coffeeStrength.setOnSeekBarChangeListener(seekBarUpdater(holder));
         holder.coffeeMilk.setOnSeekBarChangeListener(seekBarUpdater(holder));
@@ -100,6 +125,12 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
             }
         });
 
+        holder.nfcButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                setNFCProduct(holder);
+            }
+        });
+
         holder.coffeeHeader.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 collapse(holder);
@@ -112,6 +143,11 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
             close(holder);
         } else {
             CobotMain.theCard = holder;
+            RotateAnimation aRotate = new RotateAnimation(0f, -180f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            aRotate.setStartOffset(0);
+            aRotate.setDuration(0);
+            aRotate.setFillAfter(true);
+            holder.coffeeArrow.startAnimation(aRotate);
         }
 
     }
@@ -137,13 +173,16 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
             //resize card
             ResizeAnimation resizeAnimation = new ResizeAnimation(holder.coffeeBody, 0, CobotMain.cardHeight);
             resizeAnimation.setDuration(200);
+            resizeAnimation.setInterpolator(cobotMain.getApplicationContext(), android.R.anim.accelerate_decelerate_interpolator);
             holder.coffeeWrap.startAnimation(resizeAnimation);
 
             //rotate arrow
-            Animation an = new RotateAnimation(0.0f, -180.0f, holder.coffeeArrow.getPivotX(), holder.coffeeArrow.getPivotY());
-            an.setDuration(200);
-            an.setFillAfter(true);
-            holder.coffeeArrow.setAnimation(an);
+            RotateAnimation aRotate = new RotateAnimation(0f, -180f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            aRotate.setStartOffset(0);
+            aRotate.setDuration(200);
+            aRotate.setInterpolator(cobotMain.getApplicationContext(), android.R.anim.accelerate_decelerate_interpolator);
+            aRotate.setFillAfter(true);
+            holder.coffeeArrow.startAnimation(aRotate);
 
         } else {
             holder.collapsed = true;
@@ -151,13 +190,16 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
             //resize card
             ResizeAnimation resizeAnimation = new ResizeAnimation(holder.coffeeBody, CobotMain.cardHeight, 0);
             resizeAnimation.setDuration(200);
+            resizeAnimation.setInterpolator(cobotMain.getApplicationContext(), android.R.anim.accelerate_decelerate_interpolator);
             holder.coffeeWrap.startAnimation(resizeAnimation);
 
             //rotate arrow
-            Animation an = new RotateAnimation(-180.0f, 0.0f, holder.coffeeArrow.getPivotX(), holder.coffeeArrow.getPivotY());
-            an.setDuration(200);
-            an.setFillAfter(true);
-            holder.coffeeArrow.setAnimation(an);
+            RotateAnimation aRotate = new RotateAnimation(-180f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            aRotate.setStartOffset(0);
+            aRotate.setDuration(200);
+            aRotate.setInterpolator(cobotMain.getApplicationContext(), android.R.anim.accelerate_decelerate_interpolator);
+            aRotate.setFillAfter(true);
+            holder.coffeeArrow.startAnimation(aRotate);
         }
     }
 
@@ -201,7 +243,7 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
         if (CobotMain.currentOrderId == 0) {
             order(holder);
         } else {
-            addToOrder(holder, CobotMain.currentOrderId);
+            addToOrder(holder, CobotMain.currentOrderId, false);
         }
     }
 
@@ -251,6 +293,22 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
         return p;
     }
 
+
+    public void triggerBackgroundRipple(View v) {
+        Drawable background = v.getBackground();
+        if(background instanceof RippleDrawable){
+            Log.d("isRipple", "true");
+            RippleDrawable ripple = (RippleDrawable)background;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Log.d("detectsVersion", String.valueOf(Build.VERSION.SDK_INT));
+                ripple.setHotspot(v.getWidth() / 2, v.getHeight() / 2);
+                ripple.setVisible (true, true);
+            }
+        } else {
+            Log.d("isRipple", "false");
+        }
+    }
+
     /**
      * Creates an order for a user
      * @param holder The CoffeeViewHolder which has to be ordered
@@ -262,23 +320,71 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
             public void onResponse(Response<Order> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     System.out.println("Order add success");
-                    addToOrder(holder, response.body().getId());
+                    addToOrder(holder, response.body().getId(), true);
                 } else {
                     if(response.message().equalsIgnoreCase("FORBIDDEN")) {
-                        addToOrder(holder, CobotMain.currentOrderId);
+                        addToOrder(holder, CobotMain.currentOrderId, false);
                     } else {
                         toast.setText("Something went wrong!");
                         toast.show();
                         ApiError error = ErrorUtils.parseError(response, retrofit);
                         Log.d("Order error message", error.message());
                     }
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d("Error order", t.getMessage());
+                toast.setText("Something went wrong!");
+                toast.show();
+            }
+        });
+    }
+
+    /**
+     * Creates an order for a user
+     * @param holder The CoffeeViewHolder which has to be ordered
+     */
+    public void setNFCProduct(final CoffeeViewHolder holder) {
+        ArrayList<View> nfcButtons = getViewsByTag((ViewGroup) coffeesFragment.rv.getRootView(), "nfcButton");
+        for (View nfcButton : nfcButtons) {
+                ((RadioButton) nfcButton).setChecked(false);
+        }
+
+        holder.nfcButton.setChecked(true);
+
+
+        for (Product product : coffees) {
+            if(product.getId() == holder.productId) {
+                product.setIsNFC(true);
+            } else if(product.isNFC()) {
+                product.setIsNFC(false);
+            }
+        }
+
+        Call<User> call = userClient.setNFCProduct(CobotMain.id, holder.productId);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Response<User> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    CobotMain.nfc_product_id = holder.productId;
+                    setNFCProduct(holder.productId);
+                    toast.setText("Set NFC coffee");
+                    toast.show();
+                } else {
+                    toast.setText("Something went wrong!");
+                    toast.show();
+                    coffeesFragment.initializeData();
+                    ApiError error = ErrorUtils.parseError(response, retrofit);
+                    Log.d("Order error message", error.message());
 
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                Log.d("Error", t.getMessage());
+                Log.d("Error order", t.getMessage());
                 toast.setText("Something went wrong!");
                 toast.show();
             }
@@ -290,7 +396,7 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
      * @param holder CoffeeViewHolder that should be added
      * @param id optional id for chaining to an order
      */
-    public void addToOrder(final CoffeeViewHolder holder, int id) {
+    public void addToOrder(final CoffeeViewHolder holder, int id, final boolean first) {
         if (id == 0) {
             id = CobotMain.currentOrderId;
             if (id == 0) {
@@ -311,7 +417,11 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
             @Override
             public void onResponse(Response<Product> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
+                    triggerBackgroundRipple(holder.coffeeWrap);
                     System.out.println("Product add success");
+                    if(first) {
+                        cobotMain.mViewPager.setCurrentItem(3, true);
+                    }
                     CobotMain.ordersFragment.setOrder();
                     toast.setText("Ordered!");
                     toast.show();
@@ -376,6 +486,31 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
 
     }
 
+    public void setNFCProduct(int product_id) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(cobotMain);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("product_id", product_id);
+        editor.apply();
+    }
+
+    private static ArrayList<View> getViewsByTag(ViewGroup root, String tag){
+        ArrayList<View> views = new ArrayList<View>();
+        final int childCount = root.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            final View child = root.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                views.addAll(getViewsByTag((ViewGroup) child, tag));
+            }
+
+            final Object tagObj = child.getTag();
+            if (tagObj != null && tagObj.equals(tag)) {
+                views.add(child);
+            }
+
+        }
+        return views;
+    }
+
     public static class CoffeeViewHolder extends RecyclerView.ViewHolder {
 
         CardView cv;
@@ -394,6 +529,7 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
         RelativeLayout coffeeHeader;
         RelativeLayout coffeeBody;
         Button orderButton;
+        RadioButton nfcButton;
         int coffeeType;
         int productId;
         Boolean collapsed = false;
@@ -416,6 +552,7 @@ public class CoffeeRVAdapter extends RecyclerView.Adapter<CoffeeRVAdapter.Coffee
             coffeeHeader = (RelativeLayout)itemView.findViewById(R.id.header_wrap);
             coffeeBody = (RelativeLayout)itemView.findViewById(R.id.body_wrap);
             orderButton = (Button)itemView.findViewById(R.id.orderButton);
+            nfcButton = (RadioButton)itemView.findViewById(R.id.nfcButton);
         }
     }
 }

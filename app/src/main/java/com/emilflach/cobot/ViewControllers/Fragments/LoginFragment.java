@@ -66,14 +66,13 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         loginPassword = (EditText) v.findViewById(R.id.editTextLoginPassword);
 
         toast = Toast.makeText(getActivity(), "Notification", Toast.LENGTH_SHORT);
-
         return v;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        registerFunction(0);
     }
 
     @Override
@@ -105,25 +104,30 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
      * @param v
      */
     public void register(final View v, int tries) {
+        registerFunction(tries);
+    }
+
+    public void registerFunction(int tries) {
         final int currentTries = tries + 1;
 
         Random random = new Random();
         final String name = "Bound to phone";
-        final int location = 1;
         final String email = generateString(random, "abcdefghijklmnopqrstxyz", 30) + "@anonymous.user";
         final String password = generateString(random, "abdcdefghijklmnopqrstxyz", 30);
 
         ServiceGenerator.UserClient userClient = ServiceGenerator.createService(ServiceGenerator.UserClient.class);
-        Call<User> call = userClient.createUser(name, email, password, location);
+        Call<User> call = userClient.createUser(name, email, password);
         call.enqueue(new Callback<User>() {
 
             @Override
             public void onResponse(Response<User> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
+                    setLocation(response.body().getLocation_id(), response.body().getLocation());
+                    setNFCProduct(response.body().getProduct_id());
                     setCredentials(email, password, response.body().getId());
                 } else {
                     if (currentTries < 2) {
-                        register(v, currentTries);
+                        registerFunction(currentTries);
                     }
                     ApiError error = ErrorUtils.parseError(response, retrofit);
                     Log.d("error message", error.message());
@@ -139,12 +143,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
             @Override
             public void onFailure(Throwable t) {
-                Log.d("Error", t.getMessage());
+                Log.d("Error reg", t.getMessage());
                 toast.setText("Something went wrong");
                 toast.show();
             }
         });
-
     }
 
 
@@ -164,6 +167,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
             @Override
             public void onResponse(Response<User> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
+                    setLocation(response.body().getLocation_id(), response.body().getLocation());
+                    setNFCProduct(response.body().getProduct_id());
                     setCredentials(email, password, response.body().getId());
                     System.out.println("Success");
                 } else {
@@ -177,14 +182,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
             @Override
             public void onFailure(Throwable t) {
-                Log.d("Error", t.getMessage());
+                Log.d("Error auth", t.getMessage());
                 toast.setText("Something went wrong");
                 toast.show();
             }
         });
-
-
-
     }
 
     public void setCredentials(String email, String password, int id) {
@@ -196,6 +198,21 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         editor.apply();
         CobotMain main = (CobotMain) getActivity();
         main.setAdapter(1);
+    }
+
+    public void setLocation(int location_id, String location) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("location_id", location_id);
+        editor.putString("location", location);
+        editor.apply();
+    }
+
+    public void setNFCProduct(int product_id) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("product_id", product_id);
+        editor.apply();
     }
 
     public static String generateString(Random rng, String characters, int length)

@@ -15,18 +15,24 @@ import com.emilflach.cobot.ViewControllers.Adapters.CoffeeRVAdapter;
 import com.emilflach.cobot.ViewControllers.Fragments.CoffeesFragment;
 import com.emilflach.cobot.ViewControllers.Fragments.LoginFragment;
 import com.emilflach.cobot.ViewControllers.Fragments.OrdersFragment;
+import com.emilflach.cobot.ViewControllers.Fragments.LocationsFragment;
 import com.emilflach.cobot.ViewControllers.Fragments.SettingsFragment;
 
 
 public class CobotMain extends AppCompatActivity {
 
-    private ViewPager mViewPager;
+    public ViewPager mViewPager;
 
     public final static int milkScale = 100;
     public static int id = 0; //Current user id
     public static int currentOrderId = 0; //Current order id
     public static String email = null; //Email of logged in user
     public static String password = null; //Email of logged in user
+    public static String location_name = null; //Location name of logged in user
+    public static int location_id = 0; //Location id of logged in user
+    public static int nfc_product_id = 0; //NFC product id of logged in user
+    public static int orderCount = 0; //Amount of orders before user
+
     public static int cardHeight = 0; //Height of card, set at first run
     public static CoffeeRVAdapter.CoffeeViewHolder theCard = null; //Card to get the height from
     public static OrdersFragment ordersFragment = null;
@@ -49,6 +55,9 @@ public class CobotMain extends AppCompatActivity {
         id = preferences.getInt("id", 0);
         email = preferences.getString("email", null);
         password = preferences.getString("password", null);
+        location_name = preferences.getString("location", null);
+        location_id = preferences.getInt("location_id", 0);
+        nfc_product_id = preferences.getInt("product_id", 0);
 
         Log.d("id", String.valueOf(id));
         Log.d("email", String.valueOf(email));
@@ -67,25 +76,25 @@ public class CobotMain extends AppCompatActivity {
     public static int coffeeImage(int i) {
         switch (i) {
             case 0: //Black
-                return R.drawable.black;
-//            case 1: //Cappuccino
-//                return R.drawable.black;
-//            case 2: //Espresso
-//                return R.drawable.black;
-//            case 3: //Cafe au Lait
-//                return R.drawable.black;
-//            case 4: //Wiener Melange
-//                return R.drawable.black;
-//            case 5: //Double Espresso
-//                return R.drawable.black;
-//            case 6: //Cafe Mocca
-//                return R.drawable.black;
-//            case 7: //Cafe Macchiato
-//                return R.drawable.black;
-//            case 8: //Espresso choc
-//                return R.drawable.black;
-//            case 9://Hot Chocolate
-//                return R.drawable.black;
+                return R.drawable.coffee_black;
+            case 1: //Cappuccino
+                return R.drawable.coffee_cappucino;
+            case 2: //Espresso
+                return R.drawable.coffee_espresso;
+            case 3: //Cafe au Lait
+                return R.drawable.coffee_lait;
+            case 4: //Wiener Melange
+                return R.drawable.coffee_weiner;
+            case 5: //Double Espresso
+                return R.drawable.coffee_espresso;
+            case 6: //Cafe Mocca
+                return R.drawable.coffee_moca;
+            case 7: //Cafe Macchiato
+                return R.drawable.coffee_macchiato;
+            case 8: //Espresso choc
+                return R.drawable.coffee_choco;
+            case 9://Hot Chocolate
+                return R.drawable.coffee_choco;
             default:
                 return R.drawable.black;
         }
@@ -95,26 +104,14 @@ public class CobotMain extends AppCompatActivity {
         switch (i) {
             case -1:
                 return "No current order";
-            case 0: //I have no shit yet for this
+            case 0:
                 return "Order added to queue";
-//            case 1: //Cappuccino
-//                return R.drawable.black;
-//            case 2: //Espresso
-//                return R.drawable.black;
-//            case 3: //Cafe au Lait
-//                return R.drawable.black;
-//            case 4: //Wiener Melange
-//                return R.drawable.black;
-//            case 5: //Double Espresso
-//                return R.drawable.black;
-//            case 6: //Cafe Mocca
-//                return R.drawable.black;
-//            case 7: //Cafe Macchiato
-//                return R.drawable.black;
-//            case 8: //Espresso choc
-//                return R.drawable.black;
-//            case 9://Hot Chocolate
-//                return R.drawable.black;
+            case 1:
+                return "Navigating to your location";
+            case 2:
+                return "Preparing your order";
+            case 3:
+                return "Order complete";
             default:
                 return "No current order";
         }
